@@ -10,17 +10,19 @@ const privateRoute = ({ component: Component, roles, auth, ...rest }) => (
   <Route
     {...rest}
     render={(props) => {
-      if (localStorage.getItem("usertoken")) {
-        if (roles && auth.user && roles.indexOf(auth.user.roll) === -1) {
-          return <Redirect to={{ pathname: "/notauth" }} />;
-        }
-        return <Component {...props} />;
+      if (!localStorage.getItem("ud")) {
+        return (
+          <Redirect
+            to={{ pathname: "/login", state: { from: props.location } }}
+          />
+        );
       }
-      return (
-        <Redirect
-          to={{ pathname: "/login", state: { from: props.location } }}
-        />
-      );
+      const st = localStorage.getItem("ud");
+      const ud = JSON.parse(st);
+      if (roles && roles.indexOf(ud.role) === -1) {
+        return <Redirect to={{ pathname: "/notauth" }} />;
+      }
+      return <Component {...props} />;
     }}
   />
 );

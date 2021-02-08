@@ -2,9 +2,6 @@ import * as ActionTypes from "../actionTypes/favourite";
 import axios from "axios";
 import { apiURL } from "../../helpers/config";
 import { authHeader } from "../services";
-// const authHeader = {
-//     authorization: `Bearer ${localStorage.getItem("usertoken")}`
-// }
 
 export const addFavourite = (productId) => (dispatch) => {
   axios({
@@ -13,7 +10,7 @@ export const addFavourite = (productId) => (dispatch) => {
     data: {
       _id: productId,
     },
-    headers: authHeader,
+    headers: authHeader(),
   })
     .then((response) => {
       if (response.status === 200)
@@ -41,7 +38,7 @@ export const fetchFavourite = () => (dispatch) => {
   axios({
     method: "get",
     url: apiURL + "/api/favourite",
-    headers: authHeader,
+    headers: authHeader(),
   })
     .then((response) => {
       if (response.status === 200) {
@@ -72,7 +69,7 @@ export const deleteFavourite = (productId) => (dispatch) => {
     data: {
       _id: productId,
     },
-    headers: authHeader,
+    headers: authHeader(),
   })
     .then((response) => {
       if (response.status === 200) {

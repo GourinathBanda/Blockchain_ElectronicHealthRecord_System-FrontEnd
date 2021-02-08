@@ -8,13 +8,12 @@ export const autoLogin = () => (dispatch) => {
   axios({
     method: "get",
     url: apiURL + "/api/users/autologin",
-    headers: authHeader,
+    headers: authHeader(),
   })
     // .then(response => response.json())
     .then((response) => {
       if (response.status === 200) {
-        console.log(response.data);
-        localStorage.setItem("usertoken", response.data.token);
+        localStorage.setItem("ud", JSON.stringify(response.data));
         return dispatch(
           loginSuccess({
             username: response.data.username,
@@ -39,7 +38,7 @@ export const login = (username, password) => (dispatch) => {
     // .then(response => response.json())
     .then((response) => {
       if (response.status === 200) {
-        localStorage.setItem("usertoken", response.data.token);
+        localStorage.setItem("ud", JSON.stringify(response.data));
         return dispatch(
           loginSuccess({ username: username, role: response.data.role })
         );
@@ -50,23 +49,6 @@ export const login = (username, password) => (dispatch) => {
     .catch((err) => {
       return dispatch(loginFailed(err.message));
     });
-
-  /*
-  // dummy login
-  if (username === "p" && password === "p") {
-    localStorage.setItem("usertoken", "sometoken");
-    return dispatch(loginSuccess({ username: username, role: "Patient" }));
-  }
-  if (username === "h" && password === "p") {
-    localStorage.setItem("usertoken", "sometoken");
-    return dispatch(loginSuccess({ username: username, role: "Hospital" }));
-  }
-  if (username === "i" && password === "p") {
-    localStorage.setItem("usertoken", "sometoken");
-    return dispatch(loginSuccess({ username: username, role: "Insurer" }));
-  }
-  return dispatch(loginFailed("Login failed"));
-  */
 };
 
 export const loginRequest = (user) => ({
@@ -87,11 +69,11 @@ export const logout = () => (dispatch) => {
   axios({
     method: "get",
     url: apiURL + "/api/users/logout",
-    headers: authHeader,
+    headers: authHeader(),
   })
     .then((response) => {
       if (response.status === 200) {
-        localStorage.removeItem("usertoken");
+        localStorage.removeItem("ud");
         return dispatch(logoutSuccess());
       } else {
         throw new Error("Error: " + response.status.toString());

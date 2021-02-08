@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Paper from "@material-ui/core/Paper";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { login } from "../redux/actionCreators/auth";
+import { login, autoLogin } from "../redux/actionCreators/auth";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -14,19 +14,25 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => ({
   login: (username, password) => dispatch(login(username, password)),
+  autoLogin: () => dispatch(autoLogin()),
 });
 
 const Login = (props) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { autoLogin } = props;
 
   const requestLogin = (e) => {
     e.preventDefault();
     props.login(username, password);
   };
 
-  const { loggingIn, loggedIn, errMess } = props.auth;
+  useEffect(() => {
+    autoLogin();
+  }, []);
 
+  const { loggingIn, loggedIn, errMess } = props.auth;
+  console.log(props.auth);
   if (loggedIn && props.auth.user) return <Redirect to="/" />;
 
   return (

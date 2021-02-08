@@ -1,17 +1,11 @@
 import React, { useState } from "react";
-import { connect } from "react-redux";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import { autoLogin } from "../redux/actionCreators/auth";
 
-const mapDispatchToProps = (dispatch) => ({
-  autoLogin: () => dispatch(autoLogin()),
-});
-
-function Main() {
+const Main = (props) => {
   const [patientID, setPatientID] = useState("");
   const [textInput, setTextInput] = useState("");
 
@@ -62,6 +56,6 @@ function Main() {
       </Container>
     </>
   );
-}
+};
 
-export default connect(null, mapDispatchToProps)(Main);
+export default Main;
