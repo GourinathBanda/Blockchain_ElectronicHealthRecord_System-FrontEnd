@@ -1,14 +1,20 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import { autoLogin } from "../redux/actionCreators/auth";
+
+const mapDispatchToProps = (dispatch) => ({
+  autoLogin: () => dispatch(autoLogin()),
+});
 
 function Main() {
   const [patientID, setPatientID] = useState("");
   const [textInput, setTextInput] = useState("");
-  // const patientID = null;
+
   return (
     <>
       <Appbar />
@@ -48,7 +54,7 @@ function Main() {
             >
               View
             </Button>
-            <Button variant="contained" fullWidth color="primary" href="/view">
+            <Button variant="contained" fullWidth color="primary" href="/add">
               Add
             </Button>
           </div>
@@ -58,4 +64,4 @@ function Main() {
   );
 }
 
-export default Main;
+export default connect(null, mapDispatchToProps)(Main);
