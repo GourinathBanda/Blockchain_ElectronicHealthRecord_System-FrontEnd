@@ -4,17 +4,41 @@ import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import { connect } from "react-redux";
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
+
+// const mapDispatchToProps = (dispatch) => ({});
 
 const Main = (props) => {
   const [patientID, setPatientID] = useState("");
+  const [recordFound, setRecordFound] = useState(true);
   const [textInput, setTextInput] = useState("");
+
+  const handleNoRecord = (e) => {
+    e.preventDefault();
+    setRecordFound(false);
+    setPatientID("");
+  };
+
+  const handleViewMyRecords = () => {};
+  const handleView = () => {
+    askViewPermission();
+    // show notification sent
+  };
+
+  const askViewPermission = () => {
+    // send ask permission to server
+  };
 
   return (
     <>
       <Appbar />
       <Container maxWidth="xs" style={{ marginTop: "200px" }}>
         {patientID === "" && (
-          <div className="findPatient">
+          <div className="findPa  tient">
             <Typography margin="normal" style={{ marginTop: "8px" }}>
               Please enter patient's ID - Aadhar/Public Key
             </Typography>
@@ -25,7 +49,7 @@ const Main = (props) => {
               variant="outlined"
               margin="normal"
               required
-              onChange={(e) => setTextInput(e)}
+              onChange={(e) => setTextInput(e.target.value)}
             />
             <Button
               variant="contained"
@@ -33,23 +57,62 @@ const Main = (props) => {
               color="primary"
               onClick={(e) => setPatientID(textInput)}
             >
-              OK
+              Search
             </Button>
-          </div>
-        )}
-        {patientID !== "" && (
-          <div className="ViewAdd">
+            <hr />
             <Button
               variant="contained"
               fullWidth
               color="primary"
-              href="/view"
+              onClick={(e) => handleViewMyRecords(textInput)}
+            >
+              View My Records
+            </Button>
+          </div>
+        )}
+        {patientID !== "" && recordFound === true && (
+          <div className="ViewAdd">
+            <Typography>
+              Patient Record Exists
+              <br /> ID: {patientID}
+            </Typography>
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              // href="/view"
+              onClick={handleView}
               style={{ marginBottom: "8px" }}
             >
               View
             </Button>
             <Button variant="contained" fullWidth color="primary" href="/add">
               Add
+            </Button>
+            <hr />
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              style={{ marginBottom: "8px" }}
+              onClick={handleNoRecord}
+            >
+              Cancel
+            </Button>
+          </div>
+        )}
+
+        {patientID !== "" && recordFound === false && (
+          <div>
+            <Typography>No record exists for patient ID:{patientID}</Typography>
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              style={{ marginBottom: "8px" }}
+              onClick={handleNoRecord}
+            >
+              Okay
             </Button>
           </div>
         )}
@@ -58,4 +121,4 @@ const Main = (props) => {
   );
 };
 
-export default Main;
+export default connect(mapStateToProps)(Main);

@@ -23,7 +23,7 @@ ReactDOM.render(
             exact
             path="/"
             component={Main}
-            roles={[roles.HOSPITAL, roles.INSURER]}
+            roles={[roles.PATIENT, roles.HOSPITAL, roles.INSURER]}
           />
           <PrivateRoute
             exact
