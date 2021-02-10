@@ -38,7 +38,7 @@ const Main = (props) => {
       <Appbar />
       <Container maxWidth="xs" style={{ marginTop: "200px" }}>
         {patientID === "" && (
-          <div className="findPa  tient">
+          <div className="findPatient">
             <Typography margin="normal" style={{ marginTop: "8px" }}>
               Please enter patient's ID - Aadhar/Public Key
             </Typography>
