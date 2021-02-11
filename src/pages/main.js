@@ -1,10 +1,13 @@
 import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
+import { checkUserExists } from "../services/apiCalls";
+import DialogBox from "../components/Dialog";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -13,24 +16,59 @@ const mapStateToProps = (state) => ({
 // const mapDispatchToProps = (dispatch) => ({});
 
 const Main = (props) => {
+  const history = useHistory();
   const [patientID, setPatientID] = useState("");
   const [recordFound, setRecordFound] = useState(true);
   const [textInput, setTextInput] = useState("");
+  const [openDialog, setOpenDialog] = useState("");
 
-  const handleNoRecord = (e) => {
+  const buttons = [
+    {
+      onClick: () => askViewPermission(),
+      text: "Okay",
+    },
+    {
+      onClick: () => setOpenDialog(false),
+      text: "Cancel",
+    },
+  ];
+  const handleNotRecord = (e) => {
     e.preventDefault();
     setRecordFound(false);
     setPatientID("");
   };
 
   const handleViewMyRecords = () => {};
+
+  const handleSearchUser = async (id) => {
+    setPatientID(textInput);
+    const exists = await checkUserExists(patientID);
+    if (exists) setRecordFound(true);
+  };
+
   const handleView = () => {
-    askViewPermission();
+    // if already permission
+    const permission = false; //fetch from server
+    if (permission) {
+      navigateToView();
+    }
     // show notification sent
   };
 
   const askViewPermission = () => {
+    setOpenDialog(false);
     // send ask permission to server
+    const permission = false; //fetch from server
+    if (permission) {
+      navigateToView();
+    }
+  };
+
+  const navigateToView = () => {
+    history.push({
+      pathname: "/view",
+      patientID: patientID,
+    });
   };
 
   return (
@@ -55,7 +93,7 @@ const Main = (props) => {
               variant="contained"
               fullWidth
               color="primary"
-              onClick={(e) => setPatientID(textInput)}
+              onClick={handleSearchUser}
             >
               Search
             </Button>
@@ -95,7 +133,7 @@ const Main = (props) => {
               fullWidth
               color="primary"
               style={{ marginBottom: "8px" }}
-              onClick={handleNoRecord}
+              onClick={handleNotRecord}
             >
               Cancel
             </Button>
@@ -110,13 +148,20 @@ const Main = (props) => {
               fullWidth
               color="primary"
               style={{ marginBottom: "8px" }}
-              onClick={handleNoRecord}
+              onClick={handleNotRecord}
             >
               Okay
             </Button>
           </div>
         )}
       </Container>
+      <DialogBox
+        // onClose={handleOnDialogClose}
+        text="Asking user abc for read permission"
+        title="Read Permission"
+        open={openDialog}
+        buttons={buttons}
+      />
     </>
   );
 };
