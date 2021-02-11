@@ -1,7 +1,7 @@
 import * as ActionTypes from "../actionTypes/products";
 import axios from "axios";
 import { apiURL } from "../../helpers/config";
-import { apiURL } from "../../config";
+import { authHeader } from "../../services/authHeader";
 
 // ADD SINGLE PRODUCT
 export const addProduct = (product) => (dispatch) => {

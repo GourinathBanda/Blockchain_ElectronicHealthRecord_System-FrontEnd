@@ -1,7 +1,7 @@
 import * as ActionTypes from "../actionTypes/auth";
 import axios from "axios";
 import { apiURL } from "../../helpers/config";
-import { authHeader } from "../services";
+import { authHeader } from "../../services/authHeader";
 
 // AUTO LOGIN
 export const autoLogin = () => (dispatch) => {

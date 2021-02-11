@@ -10,7 +10,7 @@ import axios from "axios";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import { apiURL } from "../helpers/config";
-import { authHeader } from "../redux/services";
+import { authHeader } from "../services/authHeader";
 
 const useStyles = makeStyles((theme) => ({
   content: {

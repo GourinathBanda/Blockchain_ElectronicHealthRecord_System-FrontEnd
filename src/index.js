@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import Main from "./pages/main.js";
 import View from "./pages/view.js";
 import Add from "./pages/add.js";
+import Profile from "./pages/profile.js";
 import Register from "./pages/register.js";
 import NotAuth from "./pages/notauth.js";
 import Login from "./pages/login.js";
@@ -36,6 +37,12 @@ ReactDOM.render(
             path="/add"
             component={Add}
             roles={[roles.HOSPITAL]}
+          />
+          <PrivateRoute
+            exact
+            path="/profile"
+            component={Profile}
+            roles={[roles.PATIENT, roles.HOSPITAL, roles.INSURER]}
           />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />

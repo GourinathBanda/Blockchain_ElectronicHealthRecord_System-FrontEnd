@@ -1,7 +1,7 @@
 import * as ActionTypes from "../actionTypes/favourite";
 import axios from "axios";
 import { apiURL } from "../../helpers/config";
-import { authHeader } from "../services";
+import { authHeader } from "../../services/authHeader";
 
 export const addFavourite = (productId) => (dispatch) => {
   axios({

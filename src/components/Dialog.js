@@ -16,8 +16,10 @@ function DialogBox(props) {
           <DialogContentText>{text}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          {buttons.map((button) => (
-            <Button onClick={button.onClick}>{button.text}</Button>
+          {buttons.map((button, index) => (
+            <Button key={index} onClick={button.onClick}>
+              {button.text}
+            </Button>
           ))}
         </DialogActions>
       </Dialog>
