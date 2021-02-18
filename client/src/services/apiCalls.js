@@ -41,20 +41,17 @@ export const updateCurrentUser = (data) => {
 };
 
 export const checkUserExists = (id) => {
-  return (
-    axios({
-      method: "get",
-      url: apiURL + "/api/users/user/id",
-      headers: authHeader(),
+  return axios({
+    method: "get",
+    url: apiURL + "/api/users/checkexists/" + id,
+    headers: authHeader(),
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        return "SUCCESSFUL";
+      }
     })
-      // .then((response) => response.json())
-      .then((response) => {
-        if (response.status === 200) {
-          return "SUCCESSFUL";
-        }
-      })
-      .catch((err) => {
-        console.log(err.message);
-      })
-  );
+    .catch((err) => {
+      console.log(err.message);
+    });
 };

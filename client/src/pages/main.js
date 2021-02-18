@@ -20,7 +20,7 @@ const Main = (props) => {
   const [patientID, setPatientID] = useState("");
   const [recordFound, setRecordFound] = useState(true);
   const [textInput, setTextInput] = useState("");
-  const [openDialog, setOpenDialog] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
 
   const buttons = [
     {
@@ -32,7 +32,8 @@ const Main = (props) => {
       text: "Cancel",
     },
   ];
-  const handleNotRecord = (e) => {
+
+  const handleNoRecord = (e) => {
     e.preventDefault();
     setRecordFound(false);
     setPatientID("");
@@ -42,23 +43,23 @@ const Main = (props) => {
 
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
-    const exists = await checkUserExists(patientID);
+    const exists = await checkUserExists(textInput);
     if (exists) setRecordFound(true);
   };
 
   const handleView = () => {
-    // if already permission
     const permission = false; //fetch from server
-    if (permission) {
+    if (!permission) {
+      setOpenDialog(true);
+    } else {
       navigateToView();
     }
-    // show notification sent
   };
 
   const askViewPermission = () => {
     setOpenDialog(false);
     // send ask permission to server
-    const permission = false; //fetch from server
+    const permission = true; //fetch from server
     if (permission) {
       navigateToView();
     }
@@ -133,7 +134,7 @@ const Main = (props) => {
               fullWidth
               color="primary"
               style={{ marginBottom: "8px" }}
-              onClick={handleNotRecord}
+              onClick={handleNoRecord}
             >
               Cancel
             </Button>
@@ -148,7 +149,7 @@ const Main = (props) => {
               fullWidth
               color="primary"
               style={{ marginBottom: "8px" }}
-              onClick={handleNotRecord}
+              onClick={handleNoRecord}
             >
               Okay
             </Button>

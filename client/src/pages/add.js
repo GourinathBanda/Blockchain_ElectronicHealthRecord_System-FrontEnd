@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import Appbar from "../components/Appbar";
+import SnackBar from "../components/SnackBar";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
@@ -26,7 +27,7 @@ function View(props) {
   const [progress, setProgess] = useState(0); // progess bar
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
-
+  const [snackBarOpen, setSnackBarOpen] = useState(false);
   const handleChange = (e) => {
     setProgess(0);
     const file = e.target.files[0]; // accessing file
@@ -57,7 +58,10 @@ function View(props) {
         );
         setProgess(progress);
       },
-    }).catch((err) => console.log(err));
+    }).catch((err) => {
+      console.log(err);
+      setSnackBarOpen(true);
+    });
 
     //   .post(url, formData, {
     // onUploadProgress:
@@ -112,6 +116,7 @@ function View(props) {
           </Grid>
         </Paper>
       </Container>
+      <SnackBar open={snackBarOpen} />;
     </>
   );
 }

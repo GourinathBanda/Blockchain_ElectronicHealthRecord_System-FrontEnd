@@ -4,8 +4,11 @@ import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
 
 function View(props) {
-  const patientID = "abcdefg";
-  const showTitle = "View patient - " + patientID;
+  console.log(props);
+  const patientID = props.history.location.patientID;
+  // TODO: check for viewing permission, other navigate away
+  // TODO: navigate away when patientID is not set
+  const showTitle = "Viewing Patient: " + patientID;
   return (
     <>
       <Appbar showTitle={showTitle} />
