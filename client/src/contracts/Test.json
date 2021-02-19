@@ -1,0 +1,321 @@
+{
+  "contractName": "Test",
+  "abi": [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "test",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "pure",
+      "type": "function"
+    }
+  ],
+  "metadata": "{\"compiler\":{\"version\":\"0.5.16+commit.9c3226ce\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"constant\":true,\"inputs\":[],\"name\":\"test\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"payable\":false,\"stateMutability\":\"pure\",\"type\":\"function\"}],\"devdoc\":{\"methods\":{}},\"userdoc\":{\"methods\":{}}},\"settings\":{\"compilationTarget\":{\"/home/nisarg/Desktop/btp/proj/dmr-frontend/contracts/test.sol\":\"Test\"},\"evmVersion\":\"istanbul\",\"libraries\":{},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"/home/nisarg/Desktop/btp/proj/dmr-frontend/contracts/test.sol\":{\"keccak256\":\"0x0adea123aa8e2d1ff32792a3ee55453bd5bcbceab71b8672553034893bf7a5d2\",\"urls\":[\"bzz-raw://44330ed436148940b67d46819b684924b25406f899ac7966823ff83bc6d0603d\",\"dweb:/ipfs/QmdSwtrrRHZK94KzsjorDafuGsxSd5J5Z6gWqrE4BEtvcf\"]}},\"version\":1}",
+  "bytecode": "0x6080604052348015600f57600080fd5b5060888061001e6000396000f3fe6080604052348015600f57600080fd5b506004361060285760003560e01c8063f8a8fd6d14602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b600061053990509056fea265627a7a72315820bda95e29d594e68640cae3a5e9e69483cc8cb222548d9749f49ce2c8a3f1aebf64736f6c63430005100032",
+  "deployedBytecode": "0x6080604052348015600f57600080fd5b506004361060285760003560e01c8063f8a8fd6d14602d575b600080fd5b60336049565b6040518082815260200191505060405180910390f35b600061053990509056fea265627a7a72315820bda95e29d594e68640cae3a5e9e69483cc8cb222548d9749f49ce2c8a3f1aebf64736f6c63430005100032",
+  "sourceMap": "34:90:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;34:90:2;;;;;;;",
+  "deployedSourceMap": "34:90:2:-;;;;8:9:-1;5:2;;;30:1;27;20:12;5:2;34:90:2;;;;;;;;;;;;;;;;;;;56:65;;;:::i;:::-;;;;;;;;;;;;;;;;;;;;93:4;112;105:11;;56:65;:::o",
+  "source": "pragma solidity >=0.4.21 <0.7.0;\n\ncontract Test {\n  \n   function test() public pure returns (uint) {\n    return 1337;\n  }\n\n}",
+  "sourcePath": "/home/nisarg/Desktop/btp/proj/dmr-frontend/contracts/test.sol",
+  "ast": {
+    "absolutePath": "/home/nisarg/Desktop/btp/proj/dmr-frontend/contracts/test.sol",
+    "exportedSymbols": {
+      "Test": [
+        70
+      ]
+    },
+    "id": 71,
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 61,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.4",
+          ".21",
+          "<",
+          "0.7",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "0:32:2"
+      },
+      {
+        "baseContracts": [],
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "documentation": null,
+        "fullyImplemented": true,
+        "id": 70,
+        "linearizedBaseContracts": [
+          70
+        ],
+        "name": "Test",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 68,
+              "nodeType": "Block",
+              "src": "99:22:2",
+              "statements": [
+                {
+                  "expression": {
+                    "argumentTypes": null,
+                    "hexValue": "31333337",
+                    "id": 66,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": true,
+                    "kind": "number",
+                    "lValueRequested": false,
+                    "nodeType": "Literal",
+                    "src": "112:4:2",
+                    "subdenomination": null,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_rational_1337_by_1",
+                      "typeString": "int_const 1337"
+                    },
+                    "value": "1337"
+                  },
+                  "functionReturnParameters": 65,
+                  "id": 67,
+                  "nodeType": "Return",
+                  "src": "105:11:2"
+                }
+              ]
+            },
+            "documentation": null,
+            "id": 69,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "test",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 62,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "69:2:2"
+            },
+            "returnParameters": {
+              "id": 65,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 64,
+                  "name": "",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 69,
+                  "src": "93:4:2",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 63,
+                    "name": "uint",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "93:4:2",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "value": null,
+                  "visibility": "internal"
+                }
+              ],
+              "src": "92:6:2"
+            },
+            "scope": 70,
+            "src": "56:65:2",
+            "stateMutability": "pure",
+            "superFunction": null,
+            "visibility": "public"
+          }
+        ],
+        "scope": 71,
+        "src": "34:90:2"
+      }
+    ],
+    "src": "0:124:2"
+  },
+  "legacyAST": {
+    "attributes": {
+      "absolutePath": "/home/nisarg/Desktop/btp/proj/dmr-frontend/contracts/test.sol",
+      "exportedSymbols": {
+        "Test": [
+          70
+        ]
+      }
+    },
+    "children": [
+      {
+        "attributes": {
+          "literals": [
+            "solidity",
+            ">=",
+            "0.4",
+            ".21",
+            "<",
+            "0.7",
+            ".0"
+          ]
+        },
+        "id": 61,
+        "name": "PragmaDirective",
+        "src": "0:32:2"
+      },
+      {
+        "attributes": {
+          "baseContracts": [
+            null
+          ],
+          "contractDependencies": [
+            null
+          ],
+          "contractKind": "contract",
+          "documentation": null,
+          "fullyImplemented": true,
+          "linearizedBaseContracts": [
+            70
+          ],
+          "name": "Test",
+          "scope": 71
+        },
+        "children": [
+          {
+            "attributes": {
+              "documentation": null,
+              "implemented": true,
+              "isConstructor": false,
+              "kind": "function",
+              "modifiers": [
+                null
+              ],
+              "name": "test",
+              "scope": 70,
+              "stateMutability": "pure",
+              "superFunction": null,
+              "visibility": "public"
+            },
+            "children": [
+              {
+                "attributes": {
+                  "parameters": [
+                    null
+                  ]
+                },
+                "children": [],
+                "id": 62,
+                "name": "ParameterList",
+                "src": "69:2:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "constant": false,
+                      "name": "",
+                      "scope": 69,
+                      "stateVariable": false,
+                      "storageLocation": "default",
+                      "type": "uint256",
+                      "value": null,
+                      "visibility": "internal"
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "name": "uint",
+                          "type": "uint256"
+                        },
+                        "id": 63,
+                        "name": "ElementaryTypeName",
+                        "src": "93:4:2"
+                      }
+                    ],
+                    "id": 64,
+                    "name": "VariableDeclaration",
+                    "src": "93:4:2"
+                  }
+                ],
+                "id": 65,
+                "name": "ParameterList",
+                "src": "92:6:2"
+              },
+              {
+                "children": [
+                  {
+                    "attributes": {
+                      "functionReturnParameters": 65
+                    },
+                    "children": [
+                      {
+                        "attributes": {
+                          "argumentTypes": null,
+                          "hexvalue": "31333337",
+                          "isConstant": false,
+                          "isLValue": false,
+                          "isPure": true,
+                          "lValueRequested": false,
+                          "subdenomination": null,
+                          "token": "number",
+                          "type": "int_const 1337",
+                          "value": "1337"
+                        },
+                        "id": 66,
+                        "name": "Literal",
+                        "src": "112:4:2"
+                      }
+                    ],
+                    "id": 67,
+                    "name": "Return",
+                    "src": "105:11:2"
+                  }
+                ],
+                "id": 68,
+                "name": "Block",
+                "src": "99:22:2"
+              }
+            ],
+            "id": 69,
+            "name": "FunctionDefinition",
+            "src": "56:65:2"
+          }
+        ],
+        "id": 70,
+        "name": "ContractDefinition",
+        "src": "34:90:2"
+      }
+    ],
+    "id": 71,
+    "name": "SourceUnit",
+    "src": "0:124:2"
+  },
+  "compiler": {
+    "name": "solc",
+    "version": "0.5.16+commit.9c3226ce.Emscripten.clang"
+  },
+  "networks": {},
+  "schemaVersion": "3.3.4",
+  "updatedAt": "2021-02-19T10:54:15.066Z",
+  "devdoc": {
+    "methods": {}
+  },
+  "userdoc": {
+    "methods": {}
+  }
+}

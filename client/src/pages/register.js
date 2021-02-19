@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { register, registerClear } from "../redux/actionCreators/register";
+import { deploy } from '../helpers/contractDeploy';
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -86,6 +87,7 @@ export class Register extends Component {
     e.preventDefault();
     if (this.validateForm()) {
       this.props.register(this.state.user);
+      deploy();
     }
   }
 
