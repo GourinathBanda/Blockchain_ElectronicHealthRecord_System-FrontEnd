@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { register, registerClear } from "../redux/actionCreators/register";
-import { deploy } from '../helpers/contractDeploy';
+import { deploy } from "../helpers/contractDeploy";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -14,6 +14,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { roles } from "../helpers/roles";
+import faker from "faker";
 
 const availableRoles = [roles.PATIENT, roles.HOSPITAL, roles.INSURER];
 
@@ -46,6 +47,7 @@ export class Register extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.runfaker = this.runfaker.bind(this);
   }
 
   componentDidMount() {
@@ -97,6 +99,23 @@ export class Register extends Component {
     const { user } = this.state;
     this.setState({
       user: { ...user, [name]: value },
+    });
+  }
+
+  runfaker(e) {
+    e.preventDefault();
+    const name = faker.name.firstName();
+    const fakeUser = {
+      firstName: name,
+      lastName: name,
+      username: name,
+      email: name + "@" + name + ".com",
+      password: name,
+      role: roles.HOSPITAL,
+    };
+
+    this.setState({
+      user: fakeUser,
     });
   }
 
@@ -231,6 +250,15 @@ export class Register extends Component {
               href="/login"
             >
               Login
+            </Button>
+            <Button
+              style={{ marginTop: "16px" }}
+              variant="outlined"
+              fullWidth
+              color="primary"
+              onClick={this.runfaker}
+            >
+              FAKER
             </Button>
           </Paper>
         </Container>
