@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { register, registerClear } from "../redux/actionCreators/register";
-import { deploy } from "../helpers/contractDeploy";
+import { deploy } from "../services/contractDeploy";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -57,11 +57,11 @@ export class Register extends Component {
       this.props.registerClear();
     }
 
-    if(window.ethereum) {
-      window.web3 = new Web3(window.ethereum)
-      await window.ethereum.enable()
+    if (window.ethereum) {
+      window.web3 = new Web3(window.ethereum);
+      await window.ethereum.enable();
     } else {
-      window.alert("Please link Metamask to avoid any errors.")
+      window.alert("Please link Metamask to avoid any errors.");
     }
   }
 
@@ -278,8 +278,7 @@ export class Register extends Component {
           open={this.state.snackBarOpen}
           autoHideDuration={5000}
           onClose={this.handleRegNotification}
-          // message={registerd ? "Registeration Successfull!" : errMess}
-          message="Reg sucs"
+          message="Registration successfull!"
           action={
             <IconButton
               size="small"
