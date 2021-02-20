@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
 import { checkUserExists } from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
+import Web3 from "web3";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -16,6 +17,19 @@ const mapStateToProps = (state) => ({
 // const mapDispatchToProps = (dispatch) => ({});
 
 const Main = (props) => {
+
+  useEffect(() => {
+    async function loadWeb3() {
+      if(window.ethereum) {
+        window.web3 = new Web3(window.ethereum)
+        await window.ethereum.enable()
+      } else {
+        window.alert("Please link Metamask to avoid any errors.")
+      }
+    }
+    loadWeb3();
+  }, [])
+
   const history = useHistory();
   const [patientID, setPatientID] = useState("");
   const [recordFound, setRecordFound] = useState(true);

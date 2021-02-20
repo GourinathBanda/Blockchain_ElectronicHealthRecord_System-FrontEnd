@@ -1,14 +1,14 @@
 // import getWeb3 from "../getWeb3";
 import compiled from "../contracts/Test.json";
-import Web3 from "web3";
+//import Web3 from "web3";
 
-const web3 = new Web3("http://127.0.0.1:7545");
+//const web3 = new Web3("http://127.0.0.1:7545");
 const abi = compiled.abi;
 const bytecode = compiled.bytecode;
 
 export const deploy = async function () {
   // const web3 = await getWeb3();
-
+  const web3 = window.web3
   const ganacheAccounts = await web3.eth.getAccounts();
   // console.log("ganacheAccounts", ganacheAccounts);
   const instance = new web3.eth.Contract(abi);
@@ -24,8 +24,6 @@ export const deploy = async function () {
     })
     .send({
       from: ganacheAccounts[0],
-      gas: 1500000,
-      gasPrice: "30000000000000",
     })
     .then((deployment) => {
       console.log("Contract was deployed at the following address:");
@@ -54,7 +52,7 @@ export const deploy = async function () {
 const call = async (account, address) => {
   try {
     // Stores a given value, 5 by default.
-
+    const web3 = window.web3
     const contract = new web3.eth.Contract(abi, address);
     const response = await contract.methods.test().call({ from: account });
     console.log(response);

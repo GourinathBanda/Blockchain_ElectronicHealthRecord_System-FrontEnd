@@ -15,6 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { roles } from "../helpers/roles";
 import faker from "faker";
+import Web3 from "web3";
 
 const availableRoles = [roles.PATIENT, roles.HOSPITAL, roles.INSURER];
 
@@ -50,10 +51,17 @@ export class Register extends Component {
     this.runfaker = this.runfaker.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.props.registeration.registerd) {
       this.handleRegNotification(true);
       this.props.registerClear();
+    }
+
+    if(window.ethereum) {
+      window.web3 = new Web3(window.ethereum)
+      await window.ethereum.enable()
+    } else {
+      window.alert("Please link Metamask to avoid any errors.")
     }
   }
 
