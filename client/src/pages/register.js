@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { register, registerClear } from "../redux/actionCreators/register";
-import { deploy } from "../services/contractDeploy";
+import { deploy } from "../services/contractCalls";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";

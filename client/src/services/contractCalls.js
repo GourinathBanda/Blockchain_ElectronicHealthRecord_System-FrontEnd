@@ -33,7 +33,14 @@ export const askReadPermission = async (account, address) => {
     const contract = new web3.eth.Contract(abi, address);
     const response = await contract.methods
       .ReadPermission()
-      .send({ from: account });
+      .send({ from: account })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     console.log(response);
   } catch (err) {
     console.log(err);

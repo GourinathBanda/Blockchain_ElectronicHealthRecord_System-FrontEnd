@@ -9,6 +9,7 @@ import { connect } from "react-redux";
 import { checkUserExists } from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
 import Web3 from "web3";
+import { askReadPermission } from "../services/contractCalls";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -17,18 +18,17 @@ const mapStateToProps = (state) => ({
 // const mapDispatchToProps = (dispatch) => ({});
 
 const Main = (props) => {
-
   useEffect(() => {
     async function loadWeb3() {
-      if(window.ethereum) {
-        window.web3 = new Web3(window.ethereum)
-        await window.ethereum.enable()
+      if (window.ethereum) {
+        window.web3 = new Web3(window.ethereum);
+        await window.ethereum.enable();
       } else {
-        window.alert("Please link Metamask to avoid any errors.")
+        window.alert("Please link Metamask to avoid any errors.");
       }
     }
     loadWeb3();
-  }, [])
+  }, []);
 
   const history = useHistory();
   const [patientID, setPatientID] = useState("");
@@ -70,10 +70,13 @@ const Main = (props) => {
     }
   };
 
-  const askViewPermission = () => {
+  const askViewPermission = async () => {
     setOpenDialog(false);
     // send ask permission to server
-    const permission = true; //fetch from server
+    const accountsAvailable = await window.web3.eth.getAccounts();
+    const address = "0xE52CD5946Da869F23ae437D6eb967885b5df05e9";
+    askReadPermission(accountsAvailable[0], address);
+    const permission = false; //fetch from server
     if (permission) {
       navigateToView();
     }
