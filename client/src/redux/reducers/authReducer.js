@@ -31,7 +31,7 @@ export const authReducer = (state = initialState, action) => {
       return {};
     case ActionTypes.LOGOUT_FAILED:
       return state;
-
+      
     default:
       return state;
   }

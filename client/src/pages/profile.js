@@ -10,10 +10,11 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Snackbar from "@material-ui/core/Snackbar";
-import IconButton from "@material-ui/core/IconButton";
-import CloseIcon from "@material-ui/icons/Close";
+import {updateCurrentUser} from "../services/apiCalls" 
+// import CircularProgress from "@material-ui/core/CircularProgress";
+// import Snackbar from "@material-ui/core/Snackbar";
+// import IconButton from "@material-ui/core/IconButton";
+// import CloseIcon from "@material-ui/icons/Close";
 import { roles } from "../helpers/roles";
 import { getCurrentUser } from "../services/apiCalls";
 
@@ -101,8 +102,12 @@ export class Profile extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    if (this.validateForm()) {
-      this.props.register(this.state.user);
+    if(!this.state.edit) {
+      this.setState({edit: true})
+    }
+    else {
+      this.setState({edit: false})
+      updateCurrentUser(this.state.user);
     }
   }
 
@@ -282,27 +287,25 @@ export class Profile extends Component {
               </Grid>
             </Grid>
             <Button
-              style={{ marginTop: "16px" }}
-              variant="outlined"
+              style={{ marginTop: "16px", marginBottom: "16px"  }}
+              variant={!this.state.edit ? "outlined" : "contained"}
               fullWidth
               color="primary"
-              href="/login"
+              onClick={(e) => {this.handleSubmit(e)}}
             >
-              Edit
+              {this.state.edit ? "Save" : "Edit"}
             </Button>
             <Button
-              variant={registering ? "outlined" : "contained"}
+              variant="contained"
               fullWidth
               color="primary"
-              onClick={(e) => {
-                this.handleSubmit(e);
-              }}
+              href="/"
             >
-              {registering ? <CircularProgress /> : "Go back"}
+              Go Back
             </Button>
           </Paper>
         </Container>
-        <Snackbar
+        {/* <Snackbar
           anchorOrigin={{
             vertical: "bottom",
             horizontal: "left",
@@ -322,7 +325,7 @@ export class Profile extends Component {
               <CloseIcon fontSize="small" />
             </IconButton>
           }
-        />
+        /> */}
       </>
     );
   }
