@@ -31,7 +31,7 @@ export const askReadPermission = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    const response = await contract.methods
+    await contract.methods
       .ReadPermission()
       .send({ from: account })
       .then((response) => {
@@ -41,7 +41,6 @@ export const askReadPermission = async (account, address) => {
       .catch((err) => {
         console.log(err);
       });
-    console.log(response);
   } catch (err) {
     console.log(err);
   }
@@ -51,10 +50,16 @@ export const askWritePermission = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    const response = await contract.methods
+    await contract.methods
       .WritePermission()
-      .send({ from: account });
-    console.log(response);
+      .send({ from: account })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (err) {
     console.log(err);
   }
@@ -64,8 +69,16 @@ export const handleRead = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    const response = await contract.methods.Read().send({ from: account });
-    console.log(response);
+    await contract.methods
+      .Read()
+      .send({ from: account })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (err) {
     console.log(err);
   }
@@ -75,8 +88,16 @@ export const handleWrite = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    const response = await contract.methods.Write().send({ from: account });
-    console.log(response);
+    await contract.methods
+      .Write()
+      .send({ from: account })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (err) {
     console.log(err);
   }
@@ -86,10 +107,16 @@ export const grantReadPermission = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    const response = await contract.methods
+    await contract.methods
       .GrantReadPermission()
-      .send({ from: account });
-    console.log(response);
+      .send({ from: account })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (err) {
     console.log(err);
   }
@@ -99,10 +126,16 @@ export const grantWritePermission = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    const response = await contract.methods
+    await contract.methods
       .GrantWritePermission()
-      .send({ from: account });
-    console.log(response);
+      .send({ from: account })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (err) {
     console.log(err);
   }
