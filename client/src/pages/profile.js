@@ -1,20 +1,14 @@
 import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
-import { register, registerClear } from "../redux/actionCreators/register";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
-import {updateCurrentUser} from "../services/apiCalls" 
-// import CircularProgress from "@material-ui/core/CircularProgress";
-// import Snackbar from "@material-ui/core/Snackbar";
-// import IconButton from "@material-ui/core/IconButton";
-// import CloseIcon from "@material-ui/icons/Close";
+import { updateCurrentUser } from "../services/apiCalls";
 import { roles } from "../helpers/roles";
 import { getCurrentUser } from "../services/apiCalls";
 
@@ -22,12 +16,6 @@ const availableRoles = [roles.PATIENT, roles.HOSPITAL, roles.INSURER];
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
-  registeration: state.register,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  register: (user) => dispatch(register(user)),
-  registerClear: (user) => dispatch(registerClear(user)),
 });
 
 export class Profile extends Component {
@@ -57,24 +45,8 @@ export class Profile extends Component {
   }
 
   componentDidMount() {
-    if (this.props.registeration.registerd) {
-      this.handleRegNotification(true);
-      this.props.registerClear();
-    }
-
     this.getUser();
   }
-
-  handleRegNotification = (status) => {
-    this.setState({ snackBarOpen: status });
-  };
-
-  handleRegNotificationClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    this.handleRegNotification(false);
-  };
 
   async getUser() {
     const user = await getCurrentUser();
@@ -102,11 +74,10 @@ export class Profile extends Component {
 
   handleSubmit(e) {
     e.preventDefault();
-    if(!this.state.edit) {
-      this.setState({edit: true})
-    }
-    else {
-      this.setState({edit: false})
+    if (!this.state.edit) {
+      this.setState({ edit: true });
+    } else {
+      this.setState({ edit: false });
       updateCurrentUser(this.state.user);
     }
   }
@@ -124,22 +95,11 @@ export class Profile extends Component {
     if (this.props.auth.loggedIn && this.props.auth.user)
       return <Redirect to="/" />;
 
-    const { registering, registerd, errMess } = this.props.registeration;
-
     return (
       <>
         <Appbar />
         <Container maxWidth="md" style={{ marginTop: "70px" }}>
           <Paper style={{ padding: "20px" }}>
-            <Typography margin="normal" style={{ marginTop: "8px" }}>
-              My Profile
-            </Typography>
-            {registerd ? (
-              <Typography>Registration successfull! Please login</Typography>
-            ) : null}
-
-            {errMess}
-
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <TextField
@@ -287,48 +247,24 @@ export class Profile extends Component {
               </Grid>
             </Grid>
             <Button
-              style={{ marginTop: "16px", marginBottom: "16px"  }}
+              style={{ marginTop: "16px", marginBottom: "16px" }}
               variant={!this.state.edit ? "outlined" : "contained"}
               fullWidth
               color="primary"
-              onClick={(e) => {this.handleSubmit(e)}}
+              onClick={(e) => {
+                this.handleSubmit(e);
+              }}
             >
               {this.state.edit ? "Save" : "Edit"}
             </Button>
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              href="/"
-            >
+            <Button variant="contained" fullWidth color="primary" href="/">
               Go Back
             </Button>
           </Paper>
         </Container>
-        {/* <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-          open={this.state.snackBarOpen}
-          autoHideDuration={5000}
-          onClose={this.handleRegNotification}
-          // message={registerd ? "Registeration Successfull!" : errMess}
-          message="Reg sucs"
-          action={
-            <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
-              onClick={this.handleRegNotificationClose}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          }
-        /> */}
       </>
     );
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Profile);
+export default connect(mapStateToProps)(Profile);
