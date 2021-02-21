@@ -7,12 +7,15 @@ import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
 import { updateCurrentUser } from "../services/apiCalls";
 import Web3 from "web3";
+import { autoLogin } from "../redux/actionCreators/auth";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 
-// const mapDispatchToProps = (dispatch) => ({});
+const mapDispatchToProps = (dispatch) => ({
+  autoLogin: () => dispatch(autoLogin()),
+});
 
 const SmartContract = (props) => {
   useEffect(() => {
@@ -31,6 +34,10 @@ const SmartContract = (props) => {
     const response = await updateCurrentUser({
       scAccountAddress: address,
     });
+    if (response === "SUCCESSFUL") {
+      //TODO snow snackbar
+      props.autoLogin();
+    }
     console.log("response", response);
   };
 
@@ -53,4 +60,4 @@ const SmartContract = (props) => {
   );
 };
 
-export default connect(mapStateToProps)(SmartContract);
+export default connect(mapStateToProps, mapDispatchToProps)(SmartContract);

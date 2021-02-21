@@ -13,6 +13,10 @@ import DialogBox from "../components/Dialog";
 import MenuItem from "@material-ui/core/MenuItem";
 import Menu from "@material-ui/core/Menu";
 import { makeStyles } from "@material-ui/core/styles";
+import { grantWritePermission } from "../services/contractCalls";
+import { grantReadPermission } from "../services/contractCalls";
+import { checkReader } from "../services/contractCalls";
+import { checkWriter } from "../services/contractCalls";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -76,8 +80,14 @@ function Appbar(props) {
     setOpenDialog(false);
   };
 
-  const handleGrant = () => {
+  const handleGrant = async () => {
     setOpenDialog(true);
+    console.log("grant", props.auth);
+    // assuming write permission
+    await grantWritePermission(
+      await checkWriter(props.auth.user.scAccountAddress)
+    );
+    console.log("done");
   };
 
   const handleDeny = (value) => {
@@ -86,11 +96,11 @@ function Appbar(props) {
 
   const buttons = [
     {
-      onClick: { handleGrant },
+      onClick: handleGrant,
       text: "Grant",
     },
     {
-      onClick: { handleDeny },
+      onClick: handleDeny,
       text: "Deny",
     },
   ];

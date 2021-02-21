@@ -32,7 +32,6 @@ const Main = (props) => {
 
   const history = useHistory();
   const [patientID, setPatientID] = useState("");
-  const [recordFound, setRecordFound] = useState(true);
   const [textInput, setTextInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
   const [foundDetails, setFoundDetails] = useState(null);
@@ -50,7 +49,7 @@ const Main = (props) => {
 
   const handleNoRecord = (e) => {
     e.preventDefault();
-    setRecordFound(false);
+    setFoundDetails(null);
     setPatientID("");
   };
 
@@ -60,7 +59,6 @@ const Main = (props) => {
     setPatientID(textInput);
     const details = await getBasicUserDetails(textInput);
     if (details) {
-      setRecordFound(true);
       setFoundDetails(details);
     }
   };
@@ -76,11 +74,13 @@ const Main = (props) => {
 
   const askViewPermission = async () => {
     setOpenDialog(false);
+    // ! check if has view permission
+    const permission = false; // ! fetch from server
     // send ask permission to server
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
-    askReadPermission(accountsAvailable[0], address);
-    const permission = false; //fetch from server
+    const response = askReadPermission(accountsAvailable[0], address);
+    console.log("response", response);
     if (permission) {
       navigateToView();
     }
@@ -130,57 +130,62 @@ const Main = (props) => {
             </Button>
           </div>
         )}
-        {patientID !== "" && recordFound === true && (
-          <div className="ViewAdd">
-            <Typography>
-              Patient Record Exists
-              <br /> Username: {patientID}
-            </Typography>
-            {foundDetails && (
+        {patientID !== "" &&
+          foundDetails &&
+          foundDetails.scAccountAddress !== "" && (
+            <div className="ViewAdd">
               <Typography>
-                {foundDetails.firstname + " " + foundDetails.lastname}
+                Patient Record Exists
+                <br /> Username: {patientID}
               </Typography>
-            )}
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              // href="/view"
-              onClick={handleView}
-              style={{ marginBottom: "8px" }}
-            >
-              View
-            </Button>
-            <Button variant="contained" fullWidth color="primary" href="/add">
-              Add
-            </Button>
-            <hr />
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              style={{ marginBottom: "8px" }}
-              onClick={handleNoRecord}
-            >
-              Cancel
-            </Button>
-          </div>
-        )}
+              {foundDetails && (
+                <Typography>
+                  {foundDetails.firstname + " " + foundDetails.lastname}
+                </Typography>
+              )}
+              <Button
+                variant="contained"
+                fullWidth
+                color="primary"
+                // href="/view"
+                onClick={handleView}
+                style={{ marginBottom: "8px" }}
+              >
+                View
+              </Button>
+              <Button variant="contained" fullWidth color="primary" href="/add">
+                Add
+              </Button>
+              <hr />
+              <Button
+                variant="contained"
+                fullWidth
+                color="primary"
+                style={{ marginBottom: "8px" }}
+                onClick={handleNoRecord}
+              >
+                Cancel
+              </Button>
+            </div>
+          )}
 
-        {patientID !== "" && recordFound === false && (
-          <div>
-            <Typography>No record exists for patient ID:{patientID}</Typography>
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              style={{ marginBottom: "8px" }}
-              onClick={handleNoRecord}
-            >
-              Okay
-            </Button>
-          </div>
-        )}
+        {!foundDetails ||
+          (patientID !== "" && foundDetails.scAccountAddress === "" && (
+            <div>
+              <Typography>
+                No record exists for patient ID:{patientID}
+              </Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                color="primary"
+                style={{ marginBottom: "8px" }}
+                onClick={handleNoRecord}
+              >
+                Okay
+              </Button>
+            </div>
+          ))}
       </Container>
       <DialogBox
         // onClose={handleOnDialogClose}
