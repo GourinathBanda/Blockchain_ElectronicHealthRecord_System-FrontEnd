@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
-import { checkUserExists } from "../services/apiCalls";
+import { getBasicUserDetails } from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
 import Web3 from "web3";
 import { askReadPermission } from "../services/contractCalls";
@@ -35,6 +35,7 @@ const Main = (props) => {
   const [recordFound, setRecordFound] = useState(true);
   const [textInput, setTextInput] = useState("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [foundDetails, setFoundDetails] = useState(null);
 
   const buttons = [
     {
@@ -57,8 +58,11 @@ const Main = (props) => {
 
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
-    const exists = await checkUserExists(textInput);
-    if (exists) setRecordFound(true);
+    const details = await getBasicUserDetails(textInput);
+    if (details) {
+      setRecordFound(true);
+      setFoundDetails(details);
+    }
   };
 
   const handleView = () => {
@@ -74,7 +78,7 @@ const Main = (props) => {
     setOpenDialog(false);
     // send ask permission to server
     const accountsAvailable = await window.web3.eth.getAccounts();
-    const address = "0xE52CD5946Da869F23ae437D6eb967885b5df05e9";
+    const address = foundDetails.scAccountAddress;
     askReadPermission(accountsAvailable[0], address);
     const permission = false; //fetch from server
     if (permission) {
@@ -96,7 +100,7 @@ const Main = (props) => {
         {patientID === "" && (
           <div className="findPatient">
             <Typography margin="normal" style={{ marginTop: "8px" }}>
-              Please enter patient's ID - Aadhar/Public Key
+              Please enter patient's username
             </Typography>
             <TextField
               id="patientID"
@@ -130,8 +134,13 @@ const Main = (props) => {
           <div className="ViewAdd">
             <Typography>
               Patient Record Exists
-              <br /> ID: {patientID}
+              <br /> Username: {patientID}
             </Typography>
+            {foundDetails && (
+              <Typography>
+                {foundDetails.firstname + " " + foundDetails.lastname}
+              </Typography>
+            )}
             <Button
               variant="contained"
               fullWidth

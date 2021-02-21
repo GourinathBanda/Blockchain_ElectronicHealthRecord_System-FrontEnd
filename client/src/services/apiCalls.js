@@ -41,15 +41,15 @@ export const updateCurrentUser = (user) => {
   );
 };
 
-export const checkUserExists = (id) => {
+export const getBasicUserDetails = (id) => {
   return axios({
     method: "get",
-    url: apiURL + "/api/users/checkexists/" + id,
+    url: apiURL + "/api/users/basicdetails/" + id,
     headers: authHeader(),
   })
     .then((response) => {
       if (response.status === 200) {
-        return "SUCCESSFUL";
+        return response.data;
       }
     })
     .catch((err) => {
