@@ -7,6 +7,7 @@ import Profile from "./pages/profile.js";
 import Register from "./pages/register.js";
 import NotAuth from "./pages/notauth.js";
 import Login from "./pages/login.js";
+import SmartContract from "./pages/smartcontract.js";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import theme from "./theme";
@@ -42,6 +43,12 @@ ReactDOM.render(
             exact
             path="/profile"
             component={Profile}
+            roles={[roles.PATIENT, roles.HOSPITAL, roles.INSURER]}
+          />
+          <PrivateRoute
+            exact
+            path="/smartcontract"
+            component={SmartContract}
             roles={[roles.PATIENT, roles.HOSPITAL, roles.INSURER]}
           />
           <Route exact path="/login" component={Login} />

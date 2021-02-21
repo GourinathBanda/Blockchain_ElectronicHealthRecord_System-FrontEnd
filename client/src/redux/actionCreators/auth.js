@@ -18,6 +18,7 @@ export const autoLogin = () => (dispatch) => {
           loginSuccess({
             username: response.data.username,
             role: response.data.role,
+            scAccountAddress: response.data.scAccountAddress,
           })
         );
       }
@@ -40,7 +41,11 @@ export const login = (username, password) => (dispatch) => {
       if (response.status === 200) {
         localStorage.setItem("ud", JSON.stringify(response.data));
         return dispatch(
-          loginSuccess({ username: username, role: response.data.role })
+          loginSuccess({
+            username: username,
+            role: response.data.role,
+            scAccountAddress: response.data.scAccountAddress,
+          })
         );
       } else {
         dispatch(loginFailed(response.data.message));

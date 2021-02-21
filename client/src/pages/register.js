@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { register, registerClear } from "../redux/actionCreators/register";
-import { deploy } from "../services/contractCalls";
 import Container from "@material-ui/core/Container";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
@@ -15,7 +14,6 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { roles } from "../helpers/roles";
 import faker from "faker";
-import Web3 from "web3";
 
 const availableRoles = [roles.PATIENT, roles.HOSPITAL, roles.INSURER];
 
@@ -56,13 +54,6 @@ export class Register extends Component {
       this.handleRegNotification(true);
       this.props.registerClear();
     }
-
-    if (window.ethereum) {
-      window.web3 = new Web3(window.ethereum);
-      await window.ethereum.enable();
-    } else {
-      window.alert("Please link Metamask to avoid any errors.");
-    }
   }
 
   handleRegNotification = (status) => {
@@ -97,7 +88,6 @@ export class Register extends Component {
     e.preventDefault();
     if (this.validateForm()) {
       this.props.register(this.state.user);
-      deploy();
     }
   }
 
@@ -112,7 +102,7 @@ export class Register extends Component {
 
   runfaker(e) {
     e.preventDefault();
-    const name = faker.name.firstname();
+    const name = faker.name.firstName();
     const fakeUser = {
       firstname: name,
       lastname: name,

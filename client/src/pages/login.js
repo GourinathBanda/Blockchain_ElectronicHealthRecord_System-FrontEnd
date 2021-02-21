@@ -33,7 +33,10 @@ const Login = (props) => {
 
   const { loggingIn, loggedIn, errMess } = props.auth;
   console.log(props.auth);
-  if (loggedIn && props.auth.user) return <Redirect to="/" />;
+  if (loggedIn && props.auth.user && props.auth.user.scAccountAddress)
+    return <Redirect to="/" />;
+  if (loggedIn && props.auth.user && !props.auth.user.scAccountAddress)
+    return <Redirect to="/smartcontract" />;
 
   return (
     <div>

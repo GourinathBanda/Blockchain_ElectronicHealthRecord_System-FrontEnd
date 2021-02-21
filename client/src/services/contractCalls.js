@@ -8,7 +8,7 @@ export const deploy = async function () {
   const accountsAvailable = await web3.eth.getAccounts();
   const instance = new web3.eth.Contract(abi);
 
-  instance
+  return instance
     .deploy({
       data: bytecode,
     })

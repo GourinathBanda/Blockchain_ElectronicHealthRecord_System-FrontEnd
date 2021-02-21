@@ -50,6 +50,7 @@ export class Profile extends Component {
 
   async getUser() {
     const user = await getCurrentUser();
+    console.log("user", user);
     this.setState({
       user: { ...user },
     });
@@ -168,20 +169,6 @@ export class Profile extends Component {
                     this.handleChange(e);
                   }}
                 />
-                <TextField
-                  name="password"
-                  fullWidth
-                  label="Password"
-                  variant="outlined"
-                  margin="normal"
-                  required
-                  disabled={!this.state.edit}
-                  type="password"
-                  value={this.state.user.password}
-                  onChange={(e) => {
-                    this.handleChange(e);
-                  }}
-                />
               </Grid>
               <Grid item xs={6}>
                 <TextField
@@ -232,14 +219,28 @@ export class Profile extends Component {
                 />
 
                 <TextField
-                  name="smAccountAddress"
+                  name="scAccountAddress"
                   fullWidth
                   label="Blockchain Address"
                   variant="outlined"
                   margin="normal"
                   disabled={!this.state.edit}
                   type="text"
-                  value={this.state.user.smAccountAddress}
+                  value={this.state.user.scAccountAddress}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                />
+                <TextField
+                  name="password"
+                  fullWidth
+                  label="Password"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  disabled={!this.state.edit}
+                  type="password"
+                  value={this.state.user.password}
                   onChange={(e) => {
                     this.handleChange(e);
                   }}
