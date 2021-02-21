@@ -34,8 +34,8 @@ export class Register extends Component {
     super(props);
     this.state = {
       user: {
-        firstName: "",
-        lastName: "",
+        firstname: "",
+        lastname: "",
         username: "",
         email: "",
         password: "",
@@ -112,10 +112,10 @@ export class Register extends Component {
 
   runfaker(e) {
     e.preventDefault();
-    const name = faker.name.firstName();
+    const name = faker.name.firstname();
     const fakeUser = {
-      firstName: name,
-      lastName: name,
+      firstname: name,
+      lastname: name,
       username: name,
       email: name + "@" + name + ".com",
       password: name,
@@ -159,25 +159,25 @@ export class Register extends Component {
               }}
             />
             <TextField
-              name="firstName"
+              name="firstname"
               fullWidth
               label="First Name"
               variant="outlined"
               margin="normal"
               required
-              value={this.state.user.firstName}
+              value={this.state.user.firstname}
               onChange={(e) => {
                 this.handleChange(e);
               }}
             />
             <TextField
-              name="lastName"
+              name="lastname"
               fullWidth
               label="Last Name"
               variant="outlined"
               margin="normal"
               required
-              value={this.state.user.lastName}
+              value={this.state.user.lastname}
               onChange={(e) => {
                 this.handleChange(e);
               }}

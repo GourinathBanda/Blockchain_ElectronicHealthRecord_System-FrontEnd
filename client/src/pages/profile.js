@@ -23,8 +23,8 @@ export class Profile extends Component {
     super(props);
     this.state = {
       user: {
-        firstName: "",
-        lastName: "",
+        firstname: "",
+        lastname: "",
         username: "",
         email: "",
         password: "",
@@ -116,27 +116,27 @@ export class Profile extends Component {
                   }}
                 />
                 <TextField
-                  name="firstName"
+                  name="firstname"
                   fullWidth
                   label="First Name"
                   variant="outlined"
                   margin="normal"
                   required
                   disabled={!this.state.edit}
-                  value={this.state.user.firstName}
+                  value={this.state.user.firstname}
                   onChange={(e) => {
                     this.handleChange(e);
                   }}
                 />
                 <TextField
-                  name="lastName"
+                  name="lastname"
                   fullWidth
                   label="Last Name"
                   variant="outlined"
                   margin="normal"
                   required
                   disabled={!this.state.edit}
-                  value={this.state.user.lastName}
+                  value={this.state.user.lastname}
                   onChange={(e) => {
                     this.handleChange(e);
                   }}
