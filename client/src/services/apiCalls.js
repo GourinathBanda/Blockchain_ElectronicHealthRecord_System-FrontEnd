@@ -25,9 +25,9 @@ export const updateCurrentUser = (user) => {
   return (
     axios({
       method: "put",
-      url: apiURL + "/api/users/user",,
+      url: apiURL + "/api/users/user",
       headers: authHeader(),
-      data: user
+      data: user,
     })
       // .then((response) => response.json())
       .then((response) => {
