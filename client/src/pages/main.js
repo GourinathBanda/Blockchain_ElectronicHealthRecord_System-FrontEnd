@@ -10,6 +10,7 @@ import { getBasicUserDetails } from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
 import Web3 from "web3";
 import { askReadPermission } from "../services/contractCalls";
+import { askWritePermission } from "../services/contractCalls";
 import { roles } from "../helpers/roles";
 
 const mapStateToProps = (state) => ({
@@ -34,16 +35,28 @@ const Main = (props) => {
   const history = useHistory();
   const [patientID, setPatientID] = useState("");
   const [textInput, setTextInput] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialogView, setOpenDialogView] = useState(false);
+  const [openDialogAdd, setOpenDialogAdd] = useState(false);
   const [foundDetails, setFoundDetails] = useState(null);
 
-  const buttons = [
+  const buttonsView = [
     {
-      onClick: () => askViewPermission(),
+      onClick: () => handleAskViewPermission(),
       text: "Okay",
     },
     {
-      onClick: () => setOpenDialog(false),
+      onClick: () => setOpenDialogView(false),
+      text: "Cancel",
+    },
+  ];
+
+  const buttonsAdd = [
+    {
+      onClick: () => handleAskAddPermission(),
+      text: "Okay",
+    },
+    {
+      onClick: () => setOpenDialogAdd(false),
       text: "Cancel",
     },
   ];
@@ -67,14 +80,23 @@ const Main = (props) => {
   const handleView = () => {
     const permission = false; //fetch from server
     if (!permission) {
-      setOpenDialog(true);
+      setOpenDialogView(true);
     } else {
       navigateToView();
     }
   };
 
-  const askViewPermission = async () => {
-    setOpenDialog(false);
+  const handleAdd = () => {
+    const permission = false; //fetch from server
+    if (!permission) {
+      setOpenDialogAdd(true);
+    } else {
+      navigateToAdd();
+    }
+  };
+
+  const handleAskViewPermission = async () => {
+    setOpenDialogView(false);
     // ! check if has view permission
     const permission = false; // ! fetch from server
     // send ask permission to server
@@ -87,9 +109,30 @@ const Main = (props) => {
     }
   };
 
+  const handleAskAddPermission = async () => {
+    setOpenDialogAdd(false);
+    // ! check if has view permission
+    const permission = false; // ! fetch from server
+    // send ask permission to server
+    const accountsAvailable = await window.web3.eth.getAccounts();
+    const address = foundDetails.scAccountAddress;
+    const response = askWritePermission(accountsAvailable[0], address);
+    console.log("response", response);
+    if (permission) {
+      navigateToAdd();
+    }
+  };
+
   const navigateToView = () => {
     history.push({
       pathname: "/view",
+      patientID: patientID,
+    });
+  };
+
+  const navigateToAdd = () => {
+    history.push({
+      pathname: "/add",
       patientID: patientID,
     });
   };
@@ -159,7 +202,8 @@ const Main = (props) => {
                   variant="contained"
                   fullWidth
                   color="primary"
-                  href="/add"
+                  // href="/add"
+                  onClick={handleAdd}
                 >
                   Add
                 </Button>
@@ -199,8 +243,15 @@ const Main = (props) => {
         // onClose={handleOnDialogClose}
         text="Asking user abc for read permission"
         title="Read Permission"
-        open={openDialog}
-        buttons={buttons}
+        open={openDialogView}
+        buttonsView={buttonsView}
+      />
+      <DialogBox
+        // onClose={handleOnDialogClose}
+        text="Asking user abc for read permission"
+        title="Read Permission"
+        open={openDialogAdd}
+        buttonsView={buttonsAdd}
       />
     </>
   );
