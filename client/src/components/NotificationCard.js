@@ -36,7 +36,7 @@ const NotificationCard = (props) => {
         >
           {date || "11/12/2000"}
         </Typography>
-        {type === "view" && (
+        {type === "read" && (
           <Typography variant="h5" component="h2">
             {name + "wants to view your medical record"}
           </Typography>
