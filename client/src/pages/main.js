@@ -10,6 +10,7 @@ import { getBasicUserDetails } from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
 import Web3 from "web3";
 import { askReadPermission } from "../services/contractCalls";
+import { roles } from "../helpers/roles";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -153,9 +154,16 @@ const Main = (props) => {
               >
                 View
               </Button>
-              <Button variant="contained" fullWidth color="primary" href="/add">
-                Add
-              </Button>
+              {props.auth.user.role === roles.HOSPITAL && (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  color="primary"
+                  href="/add"
+                >
+                  Add
+                </Button>
+              )}
               <hr />
               <Button
                 variant="contained"
