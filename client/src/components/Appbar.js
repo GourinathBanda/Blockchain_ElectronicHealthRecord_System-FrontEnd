@@ -5,8 +5,8 @@ import { logout } from "../redux/actionCreators/auth";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 import NotificationsIcon from "@material-ui/icons/Notifications";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
 import DialogBox from "../components/Dialog";
@@ -46,12 +46,13 @@ const mapDispatchToProps = (dispatch) => ({
 
 function Appbar(props) {
   const [openDialog, setOpenDialog] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  // const [selectedValue, setSelectedValue] = useState(emails[1]);
+  const [anchorElNotifcations, setAnchorElNotifcations] = useState(null);
+  const [anchorElAvatar, setAnchorElAvatar] = useState(null);
   const { showTitle } = props;
   let history = useHistory();
   const classes = useStyles();
-  const openMenu = Boolean(anchorEl);
+  const openMenuNotifications = Boolean(anchorElNotifcations);
+  const openMenuAvatar = Boolean(anchorElAvatar);
 
   const handleLogout = (e) => {
     props.logout();
@@ -59,12 +60,16 @@ function Appbar(props) {
   };
 
   // Menu
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
+  const handleMenuNotifications = (event) => {
+    setAnchorElNotifcations(event.currentTarget);
+  };
+  const handleMenuAvatar = (event) => {
+    setAnchorElAvatar(event.currentTarget);
   };
 
   const handleMenuClose = () => {
-    setAnchorEl(null);
+    setAnchorElNotifcations(null);
+    setAnchorElAvatar(null);
   };
 
   // MenuItem
@@ -117,8 +122,8 @@ function Appbar(props) {
             <IconButton
               aria-label="show 17 new notifications"
               color="inherit"
-              onClick={handleMenu}
-              aria-controls="menu-appbar"
+              onClick={handleMenuNotifications}
+              aria-controls="menu-notifications"
               aria-haspopup="true"
             >
               <Badge badgeContent={17} color="secondary">
@@ -127,8 +132,8 @@ function Appbar(props) {
             </IconButton>
 
             <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
+              id="menu-notifications"
+              anchorEl={anchorElNotifcations}
               anchorOrigin={{
                 vertical: "top",
                 horizontal: "right",
@@ -138,7 +143,7 @@ function Appbar(props) {
                 vertical: "top",
                 horizontal: "right",
               }}
-              open={openMenu}
+              open={openMenuNotifications}
               onClose={handleMenuClose}
             >
               <MenuItem onClick={handleNotification}>
@@ -152,9 +157,42 @@ function Appbar(props) {
               </MenuItem>
             </Menu>
 
-            <Button color="inherit" onClick={handleLogout}>
-              Logout
-            </Button>
+            <IconButton
+              aria-label="show 15 new notifications"
+              color="inherit"
+              onClick={handleMenuAvatar}
+              aria-controls="menu-avatar"
+              aria-haspopup="true"
+            >
+              <Badge color="secondary">
+                <AccountCircleIcon />
+              </Badge>
+            </IconButton>
+
+            <Menu
+              id="menu-avatar"
+              anchorEl={anchorElAvatar}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={openMenuAvatar}
+              onClose={handleMenuClose}
+            >
+              <MenuItem
+                onClick={(e) => {
+                  history.push("/profile");
+                }}
+              >
+                Profile
+              </MenuItem>
+              <MenuItem onClick={handleLogout}>Logout</MenuItem>
+            </Menu>
           </div>
         </Toolbar>
       </AppBar>
