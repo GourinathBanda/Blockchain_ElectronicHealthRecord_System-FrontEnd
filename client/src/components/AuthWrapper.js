@@ -13,7 +13,7 @@ const mapDispatchToProps = (dispatch) => ({
 const AuthWrapper = (props) => {
   useEffect(() => {
     props.autoLogin();
-  }, [props.auth]);
+  }, []);
 
   return <>{props.children}</>;
 };
