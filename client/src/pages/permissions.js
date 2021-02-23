@@ -68,13 +68,13 @@ function Permissions(props) {
         <NotificationCard name={reader} type="read" />
         <NotificationCard name={writer} type="write" />
       </Container>
-      <DialogBox
+      {/* <DialogBox
         // onClose={handleOnDialogClose}
         text="Asking user abc for read permission"
         title="Read Permission"
         open={openDialog}
         // buttonsView={buttonsAdd}
-      />
+      /> */}
     </>
   );
 }

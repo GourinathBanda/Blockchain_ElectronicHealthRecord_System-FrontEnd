@@ -244,14 +244,14 @@ const Main = (props) => {
         text="Asking user abc for read permission"
         title="Read Permission"
         open={openDialogView}
-        buttonsView={buttonsView}
+        buttons={buttonsView}
       />
       <DialogBox
         // onClose={handleOnDialogClose}
         text="Asking user abc for read permission"
         title="Read Permission"
         open={openDialogAdd}
-        buttonsView={buttonsAdd}
+        buttons={buttonsAdd}
       />
     </>
   );

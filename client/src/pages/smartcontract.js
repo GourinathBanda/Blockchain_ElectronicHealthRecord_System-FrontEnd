@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { deploy } from "../services/contractCalls";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
@@ -18,15 +18,20 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 const SmartContract = (props) => {
+  const [deployed, setDeployed] = useState(false);
+
   useEffect(() => {
-    console.log("ef");
+    console.log(props.auth.user);
+    if (props.auth.user && props.auth.user.scAccountAddress) {
+      setDeployed(true);
+    }
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
     } else {
       window.alert("Please link Metamask to avoid any errors.");
     }
-  }, []);
+  }, [props.auth]);
 
   const createContract = async () => {
     const address = await deploy();
@@ -35,7 +40,8 @@ const SmartContract = (props) => {
       scAccountAddress: address,
     });
     if (response === "SUCCESSFUL") {
-      //TODO snow snackbar
+      //TODO show snackbar
+      setDeployed(true);
       props.autoLogin();
     }
     console.log("response", response);
@@ -45,16 +51,25 @@ const SmartContract = (props) => {
     <>
       <Appbar />
       <Container maxWidth="xs" style={{ marginTop: "200px" }}>
-        <Typography>Please create a Smart Contract to continue</Typography>
-        <Button
-          variant="contained"
-          fullWidth
-          color="primary"
-          style={{ marginBottom: "8px" }}
-          onClick={createContract}
-        >
-          Create Smart Contract
-        </Button>
+        {deployed === false && (
+          <>
+            <Typography>Please create medical record account</Typography>
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              style={{ marginBottom: "8px" }}
+              onClick={createContract}
+            >
+              Create
+            </Button>
+          </>
+        )}
+        {deployed === true && (
+          <Typography>
+            You have successfully created a medical record account
+          </Typography>
+        )}
       </Container>
     </>
   );
