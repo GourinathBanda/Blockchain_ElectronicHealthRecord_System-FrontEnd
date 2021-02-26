@@ -56,3 +56,36 @@ export const getBasicUserDetails = (id) => {
       console.log(err.message);
     });
 };
+
+// ! TODO BACKEND
+export const fetchSalt = () => {
+  return axios({
+    method: "get",
+    url: apiURL + "/api/users/fetchsalt",
+    headers: authHeader(),
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        return response.data;
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+};
+
+export const checkRSAKeysGenerated = () => {
+  return axios({
+    method: "get",
+    url: apiURL + "/api/users/checkKey",
+    headers: authHeader(),
+  })
+    .then((response) => {
+      if (response.status === 200) {
+        return response.data;
+      }
+    })
+    .catch((err) => {
+      console.log(err.message);
+    });
+};
