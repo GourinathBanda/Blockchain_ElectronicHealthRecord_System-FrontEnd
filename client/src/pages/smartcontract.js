@@ -8,6 +8,8 @@ import { connect } from "react-redux";
 import { deploy } from "../services/contractCalls";
 import { fetchSalt, updateCurrentUser } from "../services/apiCalls";
 import { autoLogin } from "../redux/actionCreators/auth";
+import { roles } from "../helpers/roles";
+
 import Web3 from "web3";
 import cryptico from "cryptico";
 
@@ -70,6 +72,12 @@ const SmartContract = (props) => {
     <>
       <Appbar />
       <Container maxWidth="xs" style={{ marginTop: "200px" }}>
+        {props.auth.user &&
+          props.auth.user.role === roles.PATIENT &&
+          !SCdeployed &&
+          !RSAKeysGenerated && (
+            <Typography>Please complete the following process:</Typography>
+          )}
         {SCdeployed === false && (
           <>
             <Typography>Please create medical record account</Typography>
