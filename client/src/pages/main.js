@@ -72,7 +72,7 @@ const Main = (props) => {
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
     const details = await getBasicUserDetails(textInput);
-    if (details) {
+    if (details !== undefined) {
       setFoundDetails(details);
     }
   };
@@ -137,6 +137,7 @@ const Main = (props) => {
     });
   };
 
+  console.log("sdf", foundDetails);
   return (
     <>
       <Appbar />
@@ -182,11 +183,9 @@ const Main = (props) => {
                 Patient Record Exists
                 <br /> Username: {patientID}
               </Typography>
-              {foundDetails && (
-                <Typography>
-                  {foundDetails.firstname + " " + foundDetails.lastname}
-                </Typography>
-              )}
+              <Typography>
+                {foundDetails.firstname + " " + foundDetails.lastname}
+              </Typography>
               <Button
                 variant="contained"
                 fullWidth
@@ -197,7 +196,7 @@ const Main = (props) => {
               >
                 View
               </Button>
-              {props.auth.user.role === roles.HOSPITAL && (
+              {props.auth.user && props.auth.user.role === roles.HOSPITAL && (
                 <Button
                   variant="contained"
                   fullWidth
@@ -221,23 +220,21 @@ const Main = (props) => {
             </div>
           )}
 
-        {!foundDetails ||
-          (patientID !== "" && foundDetails.scAccountAddress === "" && (
-            <div>
-              <Typography>
-                No record exists for patient ID:{patientID}
-              </Typography>
-              <Button
-                variant="contained"
-                fullWidth
-                color="primary"
-                style={{ marginBottom: "8px" }}
-                onClick={handleNoRecord}
-              >
-                Okay
-              </Button>
-            </div>
-          ))}
+        {((!foundDetails && patientID !== "") ||
+          (foundDetails && foundDetails.scAccountAddress === "")) && (
+          <div>
+            <Typography>No record exists for patient ID:{patientID}</Typography>
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              style={{ marginBottom: "8px" }}
+              onClick={handleNoRecord}
+            >
+              Okay
+            </Button>
+          </div>
+        )}
       </Container>
       <DialogBox
         // onClose={handleOnDialogClose}
