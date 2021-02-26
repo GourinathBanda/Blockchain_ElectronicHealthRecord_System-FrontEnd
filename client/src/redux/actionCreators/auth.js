@@ -76,9 +76,9 @@ export const logout = () => (dispatch) => {
     url: apiURL + "/api/users/logout",
     headers: authHeader(),
   })
-    .then(async (response) => {
+    .then((response) => {
       if (response.status === 200) {
-        await localStorage.removeItem("ud");
+        localStorage.removeItem("ud");
         return dispatch(logoutSuccess());
       } else {
         throw new Error("Error: " + response.status.toString());
