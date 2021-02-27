@@ -60,9 +60,11 @@ const SmartContract = (props) => {
       // const actualPassPhrase = passPhrase + salt + password;
       const actualPassPhrase = passPhrase + password;
       const RSAKey = cryptico.generateRSAKey(actualPassPhrase, 1024);
-      const publicKey = cryptico.publicKeyString(RSAKey);
-      console.log("publicKey", publicKey);
-      const response = await updateCurrentUser({ publicKey: publicKey });
+      const encryptionKey = cryptico.publicKeyString(RSAKey);
+      console.log("encryptionKey", encryptionKey);
+      const response = await updateCurrentUser({
+        encryptionKey: encryptionKey,
+      });
       console.log(response);
       if (response) setRSAKeysGenerated(true);
     }
