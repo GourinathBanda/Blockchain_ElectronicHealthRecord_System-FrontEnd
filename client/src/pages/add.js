@@ -15,6 +15,8 @@ import { authHeader } from "../services/authHeader";
 const ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
 
+import { handleWrite } from "../services/contractCalls";
+import cryptico from "cryptico";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -31,6 +33,9 @@ function View(props) {
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+
+  const patientID = props.history.location.patientID;
+  const details = props.history.location.data;
 
   const handleChange = (e) => {
     setProgess(0);
@@ -59,35 +64,33 @@ function View(props) {
     // formData.append("file", file); // appending file
 
     // axios
-    // axios({
-    //   method: "post",
-    //   url: apiURL + "/api/add",
-    //   headers: authHeader(),
-    //   data: formData,
-    //   onUploadProgress: (ProgressEvent) => {
-    //     let progress = Math.round(
-    //       (ProgressEvent.loaded / ProgressEvent.total) * 100
-    //     );
-    //     setProgess(progress);
-    //   },
-    // }).catch((err) => {
-    //   console.log(err);
-    //   setSnackBarOpen(true);
-    // });
+    const receivedHash = await axios({
+      method: "post",
+      url: apiURL + "/api/add",
+      headers: authHeader(),
+      data: formData,
+      onUploadProgress: (ProgressEvent) => {
+        let progress = Math.round(
+          (ProgressEvent.loaded / ProgressEvent.total) * 100
+        );
+        setProgess(progress);
+      },
+    }).catch((err) => {
+      console.log(err);
+      setSnackBarOpen(true);
+    });
+    saveOnSC(receivedHash);
+  };
 
-    //   .post(url, formData, {
-    // onUploadProgress:
-
-    // .then((res) => {
-    //   getFile({
-    //     name: res.data.name,
-    //     path: apiURL + res.data.path,
-    //   });
-    // })
+  const saveOnSC = async (receivedHash) => {
+    const encryptedHash = cryptico.encrypt(receivedHash, details.encryptionKey);
+    const accountsAvailable = await window.web3.eth.getAccounts();
+    const address = details.scAccountAddress;
+    const response = handleWrite(accountsAvailable[0], address, encryptedHash);
+    console.log("response", response);
   };
 
   const classes = useStyles();
-  const patientID = "abcdefg";
   const showTitle = "Add patient medical records - " + patientID;
   return (
     <>
@@ -122,6 +125,12 @@ function View(props) {
                   className="upbutton"
                 >
                   Upload
+                </Button>
+              )}
+
+              {progress === 100 && file && (
+                <Button color="primary" onClick={saveOnSC} className="upbutton">
+                  Save
                 </Button>
               )}
             </>

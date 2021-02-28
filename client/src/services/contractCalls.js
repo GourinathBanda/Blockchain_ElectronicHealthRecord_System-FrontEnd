@@ -86,12 +86,12 @@ export const handleRead = async (account, address) => {
   }
 };
 
-export const handleWrite = async (account, address) => {
+export const handleWrite = async (account, address, locationHash) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     await contract.methods
-      .Write()
+      .Write(locationHash)
       .send({ from: account })
       .then((response) => {
         console.log(response);
