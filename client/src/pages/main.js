@@ -98,12 +98,13 @@ const Main = (props) => {
   const handleAskViewPermission = async () => {
     setOpenDialogView(false);
     // ! check if has view permission
-    const permission = false; // ! fetch from server
+    var permission = false; // ! fetch from server
     // send ask permission to server
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
-    const response = askReadPermission(accountsAvailable[0], address);
+    const response = await askReadPermission(accountsAvailable[0], address);
     console.log("response", response);
+    permission = response.status;
     if (permission) {
       navigateToView();
     }
@@ -112,12 +113,13 @@ const Main = (props) => {
   const handleAskAddPermission = async () => {
     setOpenDialogAdd(false);
     // ! check if has view permission
-    const permission = true; // ! fetch from server
+    var permission = true; // ! fetch from server
     // send ask permission to server
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
-    const response = askWritePermission(accountsAvailable[0], address);
+    const response = await askWritePermission(accountsAvailable[0], address);
     console.log("response", response);
+    permission = response.status;
     if (permission) {
       navigateToAdd();
     }

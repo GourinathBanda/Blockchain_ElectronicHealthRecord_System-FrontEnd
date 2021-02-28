@@ -14,6 +14,8 @@ import { apiURL } from "../helpers/config";
 import { authHeader } from "../services/authHeader";
 import { handleWrite } from "../services/contractCalls";
 import cryptico from "cryptico";
+// const ipfsClient = require('ipfs-http-client')
+// const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -38,7 +40,12 @@ function View(props) {
     setProgess(0);
     const file = e.target.files[0]; // accessing file
     console.log(file);
-    setFile(file); // storing file
+    
+    const reader = new window.FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onloadend = () => {
+      setFile(Buffer(reader.result))
+    }
   };
 
   const cancelFileUpload = (e) => {
@@ -49,10 +56,14 @@ function View(props) {
 
   const uploadFile = async () => {
     setUploading(true);
+    // const result = await ipfs.add(file)
+    // const hash = result.path;
+    // console.log(hash)
+
     const formData = new FormData();
     formData.append("file", file); // appending file
 
-    // axios
+    //axios
     const receivedHash = await axios({
       method: "post",
       url: apiURL + "/api/add",
