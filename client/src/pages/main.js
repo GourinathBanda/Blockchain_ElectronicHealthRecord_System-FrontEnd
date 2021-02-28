@@ -293,13 +293,21 @@ const Main = (props) => {
         open={openDialogView}
         buttons={buttonsView}
       />
-      <DialogBox
-        // onClose={handleOnDialogClose}
-        text="Asking user abc for write permission"
-        title="Write Permission"
-        open={openDialogAdd}
-        buttons={buttonsAdd}
-      />
+      {foundDetails && (
+        <DialogBox
+          // onClose={handleOnDialogClose}
+          text={
+            "Asking user " +
+            foundDetails.firstname +
+            " " +
+            foundDetails.lastname +
+            " for write permission"
+          }
+          title="Write Permission"
+          open={openDialogAdd}
+          buttons={buttonsAdd}
+        />
+      )}
       <DialogBox
         // onClose={handleOnDialogClose}
         text="Grant hospital abc for write permission"
