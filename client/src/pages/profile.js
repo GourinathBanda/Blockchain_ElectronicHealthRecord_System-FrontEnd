@@ -178,7 +178,7 @@ export class Profile extends Component {
                   variant="outlined"
                   margin="normal"
                   required
-                  disabled={!this.state.edit}
+                  disabled
                   select
                   value={this.state.user.role}
                   onChange={(e) => {
@@ -197,7 +197,7 @@ export class Profile extends Component {
                   label="Aadhar"
                   variant="outlined"
                   margin="normal"
-                  disabled={!this.state.edit}
+                  disabled
                   type="number"
                   value={this.state.user.aadhar}
                   onChange={(e) => {
@@ -210,7 +210,7 @@ export class Profile extends Component {
                   label="RSA Public Key"
                   variant="outlined"
                   margin="normal"
-                  disabled={!this.state.edit}
+                  disabled
                   type="text"
                   value={this.state.user.publicKey}
                   onChange={(e) => {
@@ -224,7 +224,7 @@ export class Profile extends Component {
                   label="Blockchain Address"
                   variant="outlined"
                   margin="normal"
-                  disabled={!this.state.edit}
+                  disabled
                   type="text"
                   value={this.state.user.scAccountAddress}
                   onChange={(e) => {
@@ -238,7 +238,7 @@ export class Profile extends Component {
                   variant="outlined"
                   margin="normal"
                   required
-                  disabled={!this.state.edit}
+                  disabled
                   type="password"
                   value={this.state.user.password}
                   onChange={(e) => {
@@ -258,9 +258,17 @@ export class Profile extends Component {
             >
               {this.state.edit ? "Save" : "Edit"}
             </Button>
-            <Button variant="contained" fullWidth color="primary" href="/">
-              Go Back
-            </Button>
+
+            {this.state.edit ? 
+              <Button variant="outlined" fullWidth color="primary" onClick={() => {this.setState({edit:false})}}>
+                Cancel
+              </Button>
+            :
+              <Button variant="contained" fullWidth color="primary" href="/">
+                Go Back
+              </Button>
+            }
+
           </Paper>
         </Container>
       </>
