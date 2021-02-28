@@ -112,7 +112,7 @@ const Main = (props) => {
   const handleAskAddPermission = async () => {
     setOpenDialogAdd(false);
     // ! check if has view permission
-    const permission = false; // ! fetch from server
+    const permission = true; // ! fetch from server
     // send ask permission to server
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
@@ -127,6 +127,7 @@ const Main = (props) => {
     history.push({
       pathname: "/view",
       patientID: patientID,
+      data: foundDetails,
     });
   };
 
@@ -134,6 +135,7 @@ const Main = (props) => {
     history.push({
       pathname: "/add",
       patientID: patientID,
+      data: foundDetails,
     });
   };
 

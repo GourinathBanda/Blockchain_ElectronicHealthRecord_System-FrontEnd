@@ -12,6 +12,8 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import { apiURL } from "../helpers/config";
 import { authHeader } from "../services/authHeader";
+import { handleWrite } from "../services/contractCalls";
+import cryptico from "cryptico";
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -28,6 +30,10 @@ function View(props) {
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+
+  const patientID = props.history.location.patientID;
+  const details = props.history.location.data;
+
   const handleChange = (e) => {
     setProgess(0);
     const file = e.target.files[0]; // accessing file
@@ -41,13 +47,13 @@ function View(props) {
     setUploading(false);
   };
 
-  const uploadFile = () => {
+  const uploadFile = async () => {
     setUploading(true);
     const formData = new FormData();
     formData.append("file", file); // appending file
 
     // axios
-    axios({
+    const receivedHash = await axios({
       method: "post",
       url: apiURL + "/api/add",
       headers: authHeader(),
@@ -62,20 +68,18 @@ function View(props) {
       console.log(err);
       setSnackBarOpen(true);
     });
+    saveOnSC(receivedHash);
+  };
 
-    //   .post(url, formData, {
-    // onUploadProgress:
-
-    // .then((res) => {
-    //   getFile({
-    //     name: res.data.name,
-    //     path: apiURL + res.data.path,
-    //   });
-    // })
+  const saveOnSC = async (receivedHash) => {
+    const encryptedHash = cryptico.encrypt(receivedHash, details.encryptionKey);
+    const accountsAvailable = await window.web3.eth.getAccounts();
+    const address = details.scAccountAddress;
+    const response = handleWrite(accountsAvailable[0], address, encryptedHash);
+    console.log("response", response);
   };
 
   const classes = useStyles();
-  const patientID = "abcdefg";
   const showTitle = "Add patient medical records - " + patientID;
   return (
     <>
@@ -110,6 +114,12 @@ function View(props) {
                   className="upbutton"
                 >
                   Upload
+                </Button>
+              )}
+
+              {progress === 100 && file && (
+                <Button color="primary" onClick={saveOnSC} className="upbutton">
+                  Save
                 </Button>
               )}
             </>
