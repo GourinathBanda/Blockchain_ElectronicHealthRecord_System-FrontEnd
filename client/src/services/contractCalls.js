@@ -147,8 +147,8 @@ export const checkReader = async (address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    await contract.methods.reader
-      .call()
+    return await contract.canRead
+      .call(address)
       .then((response) => {
         console.log(response);
         return response;
@@ -161,12 +161,13 @@ export const checkReader = async (address) => {
   }
 };
 
-export const checkWriter = async (address) => {
+export const checkWriter = async (address, writerAddress) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    await contract.methods.writer
-      .call()
+    return await contract.methods
+      .CheckWritePermission()
+      .call({ from: writerAddress })
       .then((response) => {
         console.log(response);
         return response;

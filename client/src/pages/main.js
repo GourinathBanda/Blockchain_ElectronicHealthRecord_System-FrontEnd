@@ -11,6 +11,8 @@ import DialogBox from "../components/Dialog";
 import Web3 from "web3";
 import { askReadPermission } from "../services/contractCalls";
 import { askWritePermission } from "../services/contractCalls";
+import { grantWritePermission } from "../services/contractCalls";
+import { checkWriter } from "../services/contractCalls";
 import { roles } from "../helpers/roles";
 
 const mapStateToProps = (state) => ({
@@ -37,6 +39,7 @@ const Main = (props) => {
   const [textInput, setTextInput] = useState("");
   const [openDialogView, setOpenDialogView] = useState(false);
   const [openDialogAdd, setOpenDialogAdd] = useState(false);
+  const [openDialogGrantWrite, setOpenDialogGrantWrite] = useState(false);
   const [foundDetails, setFoundDetails] = useState(null);
 
   const buttonsView = [
@@ -61,13 +64,24 @@ const Main = (props) => {
     },
   ];
 
+  const buttonsGrantWrite = [
+    {
+      onClick: () => handleGrantWritePermission(),
+      text: "Okay",
+    },
+    {
+      onClick: () => setOpenDialogGrantWrite(false),
+      text: "Cancel",
+    },
+  ];
+
   const handleNoRecord = (e) => {
     e.preventDefault();
     setFoundDetails(null);
     setPatientID("");
   };
 
-  const handleViewMyRecords = () => {};
+  const handleViewMyRecords = () => { };
 
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
@@ -95,6 +109,10 @@ const Main = (props) => {
     }
   };
 
+  const handleGrantWrite = () => {
+    setOpenDialogGrantWrite(true);
+  }
+
   const handleAskViewPermission = async () => {
     setOpenDialogView(false);
     // ! check if has view permission
@@ -106,6 +124,7 @@ const Main = (props) => {
     console.log("response", response);
     permission = response.status;
     if (permission) {
+      // console.log('here', props.auth.user);
       navigateToView();
     }
   };
@@ -113,17 +132,36 @@ const Main = (props) => {
   const handleAskAddPermission = async () => {
     setOpenDialogAdd(false);
     // ! check if has view permission
-    var permission = true; // ! fetch from server
+    // var permission = false; // ! fetch from server
     // send ask permission to server
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
     const response = await askWritePermission(accountsAvailable[0], address);
     console.log("response", response);
-    permission = response.status;
-    if (permission) {
-      navigateToAdd();
-    }
+    // permission = response.status;
+    // console.log('account', accountsAvailable[0]);
+    // const addr = props.auth.user.scAccountAddress;s
+    // console.log(addr);
+    setInterval(async () => {
+      const res = await checkWriter(address, accountsAvailable[0]);
+      if (res === true) {
+        navigateToAdd();
+      }
+    }, 5000)
+    // if (permission) {
+    //   navigateToAdd();
+    // }
   };
+
+  const handleGrantWritePermission = async () => {
+    setOpenDialogGrantWrite(false);
+
+    const accountsAvailable = await window.web3.eth.getAccounts();
+    const address = props.auth.user.scAccountAddress;
+    const response = await grantWritePermission(accountsAvailable[0], address);
+    // console.log("response", response);
+    console.log(response);
+  }
 
   const navigateToView = () => {
     history.push({
@@ -141,7 +179,7 @@ const Main = (props) => {
     });
   };
 
-  console.log("sdf", foundDetails);
+  // console.log("sdf", foundDetails);
   return (
     <>
       <Appbar />
@@ -226,18 +264,29 @@ const Main = (props) => {
 
         {((!foundDetails && patientID !== "") ||
           (foundDetails && foundDetails.scAccountAddress === "")) && (
-          <div>
-            <Typography>No record exists for patient ID:{patientID}</Typography>
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              style={{ marginBottom: "8px" }}
-              onClick={handleNoRecord}
-            >
-              Okay
+            <div>
+              <Typography>No record exists for patient ID:{patientID}</Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                color="primary"
+                style={{ marginBottom: "8px" }}
+                onClick={handleNoRecord}
+              >
+                Okay
             </Button>
-          </div>
+            </div>
+          )}
+        {props.auth.user && props.auth.user.role === roles.PATIENT && (
+          <Button
+            variant="contained"
+            fullWidth
+            color="primary"
+            style={{ marginBottom: "8px" }}
+            onClick={handleGrantWrite}
+          >
+            Grant Write Permission
+          </Button>
         )}
       </Container>
       <DialogBox
@@ -249,10 +298,17 @@ const Main = (props) => {
       />
       <DialogBox
         // onClose={handleOnDialogClose}
-        text="Asking user abc for read permission"
-        title="Read Permission"
+        text="Asking user abc for write permission"
+        title="Write Permission"
         open={openDialogAdd}
         buttons={buttonsAdd}
+      />
+      <DialogBox
+        // onClose={handleOnDialogClose}
+        text="Grant hospital abc for write permission"
+        title="Read Permission"
+        open={openDialogGrantWrite}
+        buttons={buttonsGrantWrite}
       />
     </>
   );

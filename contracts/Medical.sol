@@ -6,8 +6,8 @@ contract Medical {
 
     address public reader;
     address public writer;
-    mapping(address => bool) canRead;
-    mapping(address => bool) canWrite;
+    mapping(address => bool) public canRead;
+    mapping(address => bool) public canWrite;
 
     constructor() public {
         owner = tx.origin;
@@ -45,6 +45,10 @@ contract Medical {
         require(owner == msg.sender, "You can not grant read permission");
         require(reader != address(0), "No reader!");
         canRead[reader] = true;
+    }
+
+    function CheckWritePermission() public view returns (bool) {
+        return canWrite[msg.sender];
     }
 }
 
