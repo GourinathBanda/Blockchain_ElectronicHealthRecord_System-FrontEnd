@@ -7,6 +7,7 @@ import Profile from "./pages/profile.js";
 import Register from "./pages/register.js";
 import NotAuth from "./pages/notauth.js";
 import Login from "./pages/login.js";
+import Logout from "./pages/logout.js";
 import SmartContract from "./pages/smartcontract.js";
 // import AuthWrapper from "./components/AuthWrapper";
 import { ThemeProvider } from "@material-ui/core/styles";
@@ -51,6 +52,12 @@ ReactDOM.render(
             exact
             path="/smartcontract"
             component={SmartContract}
+            roles={[roles.PATIENT, roles.HOSPITAL, roles.INSURER]}
+          />
+          <PrivateRoute
+            exact
+            path="/logout"
+            component={Logout}
             roles={[roles.PATIENT, roles.HOSPITAL, roles.INSURER]}
           />
           <Route exact path="/login" component={Login} />

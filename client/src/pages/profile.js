@@ -30,7 +30,7 @@ export class Profile extends Component {
         password: "",
         role: "",
         aadhar: "",
-        publicKey: "",
+        encryptionKey: "",
         scAccountAddress: "",
         phoneNo: "",
       },
@@ -205,14 +205,14 @@ export class Profile extends Component {
                   }}
                 />
                 <TextField
-                  name="publicKey"
+                  name="encryptionKey"
                   fullWidth
                   label="RSA Public Key"
                   variant="outlined"
                   margin="normal"
                   disabled
                   type="text"
-                  value={this.state.user.publicKey}
+                  value={this.state.user.encryptionKey}
                   onChange={(e) => {
                     this.handleChange(e);
                   }}

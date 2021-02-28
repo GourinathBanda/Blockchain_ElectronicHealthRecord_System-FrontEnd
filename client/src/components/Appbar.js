@@ -56,7 +56,7 @@ function Appbar(props) {
 
   const handleLogout = (e) => {
     props.logout();
-    history.push("/login");
+    history.push("/logout");
   };
 
   // Menu
