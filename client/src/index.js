@@ -18,6 +18,18 @@ import { PrivateRoute } from "./components/PrivateRoute";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
 
+const saveState = (state) => {
+  if (state.auth) {
+    localStorage.setItem("state", JSON.stringify(state));
+  }
+};
+
+store.subscribe(() => {
+  saveState({
+    auth: store.getState().auth,
+  });
+});
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>

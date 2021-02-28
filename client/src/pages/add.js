@@ -40,12 +40,12 @@ function View(props) {
     setProgess(0);
     const file = e.target.files[0]; // accessing file
     console.log(file);
-    
-    const reader = new window.FileReader()
-    reader.readAsArrayBuffer(file)
-    reader.onloadend = () => {
-      setFile(Buffer(reader.result))
-    }
+    setFile(file); // storing file
+    // const reader = new window.FileReader();
+    // reader.readAsArrayBuffer(file);
+    // reader.onloadend = () => {
+    //   setFile(Buffer(reader.result));
+    // };
   };
 
   const cancelFileUpload = (e) => {
@@ -62,9 +62,8 @@ function View(props) {
 
     const formData = new FormData();
     formData.append("file", file); // appending file
-
     //axios
-    const receivedHash = await axios({
+    await axios({
       method: "post",
       url: apiURL + "/api/add",
       headers: authHeader(),
@@ -75,11 +74,14 @@ function View(props) {
         );
         setProgess(progress);
       },
-    }).catch((err) => {
-      console.log(err);
-      setSnackBarOpen(true);
-    });
-    saveOnSC(receivedHash);
+    })
+      .then((response) => {
+        saveOnSC(response.data.hash);
+      })
+      .catch((err) => {
+        console.log("err", err);
+        setSnackBarOpen(true);
+      });
   };
 
   const saveOnSC = async (receivedHash) => {
@@ -125,12 +127,6 @@ function View(props) {
                   className="upbutton"
                 >
                   Upload
-                </Button>
-              )}
-
-              {progress === 100 && file && (
-                <Button color="primary" onClick={saveOnSC} className="upbutton">
-                  Save
                 </Button>
               )}
             </>

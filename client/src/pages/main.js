@@ -81,7 +81,7 @@ const Main = (props) => {
     setPatientID("");
   };
 
-  const handleViewMyRecords = () => { };
+  const handleViewMyRecords = () => {};
 
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
@@ -111,7 +111,7 @@ const Main = (props) => {
 
   const handleGrantWrite = () => {
     setOpenDialogGrantWrite(true);
-  }
+  };
 
   const handleAskViewPermission = async () => {
     setOpenDialogView(false);
@@ -131,26 +131,23 @@ const Main = (props) => {
 
   const handleAskAddPermission = async () => {
     setOpenDialogAdd(false);
-    // ! check if has view permission
-    // var permission = false; // ! fetch from server
-    // send ask permission to server
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
+
+    const res = await checkWriter(address, accountsAvailable[0]);
+    if (res === true) {
+      return navigateToAdd();
+    }
+
     const response = await askWritePermission(accountsAvailable[0], address);
     console.log("response", response);
-    // permission = response.status;
-    // console.log('account', accountsAvailable[0]);
-    // const addr = props.auth.user.scAccountAddress;s
-    // console.log(addr);
+
     setInterval(async () => {
       const res = await checkWriter(address, accountsAvailable[0]);
       if (res === true) {
         navigateToAdd();
       }
-    }, 5000)
-    // if (permission) {
-    //   navigateToAdd();
-    // }
+    }, 5000);
   };
 
   const handleGrantWritePermission = async () => {
@@ -161,7 +158,7 @@ const Main = (props) => {
     const response = await grantWritePermission(accountsAvailable[0], address);
     // console.log("response", response);
     console.log(response);
-  }
+  };
 
   const navigateToView = () => {
     history.push({
@@ -264,19 +261,19 @@ const Main = (props) => {
 
         {((!foundDetails && patientID !== "") ||
           (foundDetails && foundDetails.scAccountAddress === "")) && (
-            <div>
-              <Typography>No record exists for patient ID:{patientID}</Typography>
-              <Button
-                variant="contained"
-                fullWidth
-                color="primary"
-                style={{ marginBottom: "8px" }}
-                onClick={handleNoRecord}
-              >
-                Okay
+          <div>
+            <Typography>No record exists for patient ID:{patientID}</Typography>
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              style={{ marginBottom: "8px" }}
+              onClick={handleNoRecord}
+            >
+              Okay
             </Button>
-            </div>
-          )}
+          </div>
+        )}
         {props.auth.user && props.auth.user.role === roles.PATIENT && (
           <Button
             variant="contained"

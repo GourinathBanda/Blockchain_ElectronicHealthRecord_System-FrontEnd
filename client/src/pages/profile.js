@@ -7,12 +7,8 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
-import MenuItem from "@material-ui/core/MenuItem";
 import { updateCurrentUser } from "../services/apiCalls";
-import { roles } from "../helpers/roles";
 import { getCurrentUser } from "../services/apiCalls";
-
-const availableRoles = [roles.PATIENT, roles.HOSPITAL, roles.INSURER];
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -184,13 +180,7 @@ export class Profile extends Component {
                   onChange={(e) => {
                     this.handleChange(e);
                   }}
-                >
-                  {availableRoles.map((option) => (
-                    <MenuItem key={option} value={option}>
-                      {option}
-                    </MenuItem>
-                  ))}
-                </TextField>
+                />
                 <TextField
                   name="aadhar"
                   fullWidth
@@ -259,16 +249,22 @@ export class Profile extends Component {
               {this.state.edit ? "Save" : "Edit"}
             </Button>
 
-            {this.state.edit ? 
-              <Button variant="outlined" fullWidth color="primary" onClick={() => {this.setState({edit:false})}}>
+            {this.state.edit ? (
+              <Button
+                variant="outlined"
+                fullWidth
+                color="primary"
+                onClick={() => {
+                  this.setState({ edit: false });
+                }}
+              >
                 Cancel
               </Button>
-            :
+            ) : (
               <Button variant="contained" fullWidth color="primary" href="/">
                 Go Back
               </Button>
-            }
-
+            )}
           </Paper>
         </Container>
       </>
