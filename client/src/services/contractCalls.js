@@ -50,16 +50,18 @@ export const askWritePermission = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
+    let res;
     await contract.methods
       .WritePermission()
       .send({ from: account })
       .then((response) => {
         console.log(response);
-        return response;
+        res = response;
       })
       .catch((err) => {
         console.log(err);
       });
+    return res;
   } catch (err) {
     console.log(err);
   }

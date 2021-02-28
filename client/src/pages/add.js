@@ -12,6 +12,9 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import { apiURL } from "../helpers/config";
 import { authHeader } from "../services/authHeader";
+const ipfsClient = require('ipfs-http-client')
+const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
+
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -28,11 +31,17 @@ function View(props) {
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
   const [snackBarOpen, setSnackBarOpen] = useState(false);
+
   const handleChange = (e) => {
     setProgess(0);
     const file = e.target.files[0]; // accessing file
     console.log(file);
-    setFile(file); // storing file
+    
+    const reader = new window.FileReader()
+    reader.readAsArrayBuffer(file)
+    reader.onloadend = () => {
+      setFile(Buffer(reader.result))
+    }
   };
 
   const cancelFileUpload = (e) => {
@@ -41,27 +50,30 @@ function View(props) {
     setUploading(false);
   };
 
-  const uploadFile = () => {
+  const uploadFile = async () => {
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file); // appending file
+    const result = await ipfs.add(file)
+    const hash = result.path;
+    console.log(hash)
+    // const formData = new FormData();
+    // formData.append("file", file); // appending file
 
     // axios
-    axios({
-      method: "post",
-      url: apiURL + "/api/add",
-      headers: authHeader(),
-      data: formData,
-      onUploadProgress: (ProgressEvent) => {
-        let progress = Math.round(
-          (ProgressEvent.loaded / ProgressEvent.total) * 100
-        );
-        setProgess(progress);
-      },
-    }).catch((err) => {
-      console.log(err);
-      setSnackBarOpen(true);
-    });
+    // axios({
+    //   method: "post",
+    //   url: apiURL + "/api/add",
+    //   headers: authHeader(),
+    //   data: formData,
+    //   onUploadProgress: (ProgressEvent) => {
+    //     let progress = Math.round(
+    //       (ProgressEvent.loaded / ProgressEvent.total) * 100
+    //     );
+    //     setProgess(progress);
+    //   },
+    // }).catch((err) => {
+    //   console.log(err);
+    //   setSnackBarOpen(true);
+    // });
 
     //   .post(url, formData, {
     // onUploadProgress:
