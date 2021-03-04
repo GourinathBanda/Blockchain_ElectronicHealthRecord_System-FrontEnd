@@ -1,21 +1,21 @@
 import React, { useRef, useState } from "react";
 import Appbar from "../components/Appbar";
-import SnackBar from "../components/SnackBar";
+// import SnackBar from "../components/SnackBar";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/";
-import axios from "axios";
+// import axios from "axios";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
-import { apiURL } from "../helpers/config";
-import { authHeader } from "../services/authHeader";
+// import { apiURL } from "../helpers/config";
+// import { authHeader } from "../services/authHeader";
 import { handleWrite } from "../services/contractCalls";
 import cryptico from "cryptico";
-// const ipfsClient = require('ipfs-http-client')
-// const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
+const ipfsClient = require('ipfs-http-client')
+const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -27,11 +27,10 @@ const useStyles = makeStyles((theme) => ({
 function View(props) {
   const [file, setFile] = useState(""); // storing the uploaded file
   // storing the recived file from backend
-  // const [data, getFile] = useState({ name: "", path: "" });
   const [progress, setProgess] = useState(0); // progess bar
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
-  const [snackBarOpen, setSnackBarOpen] = useState(false);
+  // const [snackBarOpen, setSnackBarOpen] = useState(false);
 
   const patientID = props.history.location.patientID;
   const details = props.history.location.data;
@@ -41,11 +40,6 @@ function View(props) {
     const file = e.target.files[0]; // accessing file
     console.log(file);
     setFile(file); // storing file
-    // const reader = new window.FileReader();
-    // reader.readAsArrayBuffer(file);
-    // reader.onloadend = () => {
-    //   setFile(Buffer(reader.result));
-    // };
   };
 
   const cancelFileUpload = (e) => {
@@ -56,32 +50,10 @@ function View(props) {
 
   const uploadFile = async () => {
     setUploading(true);
-    // const result = await ipfs.add(file)
-    // const hash = result.path;
-    // console.log(hash)
-
-    const formData = new FormData();
-    formData.append("file", file); // appending file
-    //axios
-    await axios({
-      method: "post",
-      url: apiURL + "/api/add",
-      headers: authHeader(),
-      data: formData,
-      onUploadProgress: (ProgressEvent) => {
-        let progress = Math.round(
-          (ProgressEvent.loaded / ProgressEvent.total) * 100
-        );
-        setProgess(progress);
-      },
-    })
-      .then((response) => {
-        saveOnSC(response.data.hash);
-      })
-      .catch((err) => {
-        console.log("err", err);
-        setSnackBarOpen(true);
-      });
+    const result = await ipfs.add(file)
+    const hash = result.path;
+    console.log('ipfs', hash);
+    saveOnSC(hash);
   };
 
   const saveOnSC = async (receivedHash) => {
@@ -133,7 +105,7 @@ function View(props) {
           </Grid>
         </Paper>
       </Container>
-      <SnackBar open={snackBarOpen} />;
+      {/* <SnackBar open={snackBarOpen} />; */}
     </>
   );
 }
