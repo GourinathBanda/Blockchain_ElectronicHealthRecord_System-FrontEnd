@@ -57,7 +57,8 @@ function View(props) {
   };
 
   const saveOnSC = async (receivedHash) => {
-    const encryptedHash = cryptico.encrypt(receivedHash, details.encryptionKey);
+    //const encryptedHash = cryptico.encrypt(receivedHash, details.encryptionKey);
+    const encryptedHash = receivedHash;
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = details.scAccountAddress;
     const response = handleWrite(accountsAvailable[0], address, encryptedHash);
