@@ -11,7 +11,10 @@ import DialogBox from "../components/Dialog";
 import Web3 from "web3";
 import { askReadPermission, checkReader } from "../services/contractCalls";
 import { askWritePermission } from "../services/contractCalls";
-import { grantWritePermission, grantReadPermission } from "../services/contractCalls";
+import {
+  grantWritePermission,
+  grantReadPermission,
+} from "../services/contractCalls";
 import { checkWriter } from "../services/contractCalls";
 import { roles } from "../helpers/roles";
 
@@ -20,17 +23,17 @@ const mapStateToProps = (state) => ({
 });
 
 // const mapDispatchToProps = (dispatch) => ({});
+function loadWeb3() {
+  if (window.ethereum) {
+    window.web3 = new Web3(window.ethereum);
+    window.ethereum.enable();
+  } else {
+    window.alert("Please link Metamask to avoid any errors.");
+  }
+}
 
 const Main = (props) => {
   useEffect(() => {
-    async function loadWeb3() {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
-      } else {
-        window.alert("Please link Metamask to avoid any errors.");
-      }
-    }
     loadWeb3();
   }, []);
 
@@ -256,16 +259,18 @@ const Main = (props) => {
               <Typography>
                 {foundDetails.firstname + " " + foundDetails.lastname}
               </Typography>
-              <Button
-                variant="contained"
-                fullWidth
-                color="primary"
-                // href="/view"
-                onClick={handleView}
-                style={{ marginBottom: "8px" }}
-              >
-                View
-              </Button>
+              {props.auth.user && props.auth.user.role === roles.HOSPITAL && (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  color="primary"
+                  // href="/view"
+                  onClick={handleView}
+                  style={{ marginBottom: "8px" }}
+                >
+                  View
+                </Button>
+              )}
               {props.auth.user && props.auth.user.role === roles.HOSPITAL && (
                 <Button
                   variant="contained"
@@ -328,15 +333,22 @@ const Main = (props) => {
             Grant View Permission
           </Button>
         )}
-
       </Container>
-      <DialogBox
-        // onClose={handleOnDialogClose}
-        text="Asking user abc for read permission"
-        title="Read Permission"
-        open={openDialogView}
-        buttons={buttonsView}
-      />
+      {foundDetails && (
+        <DialogBox
+          // onClose={handleOnDialogClose}
+          text={
+            "Asking user " +
+            foundDetails.firstname +
+            " " +
+            foundDetails.lastname +
+            " for read permission"
+          }
+          title="Read Permission"
+          open={openDialogView}
+          buttons={buttonsView}
+        />
+      )}
       {foundDetails && (
         <DialogBox
           // onClose={handleOnDialogClose}
