@@ -7,12 +7,16 @@ import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
+import MenuItem from "@material-ui/core/MenuItem";
 import { updateCurrentUser } from "../services/apiCalls";
 import { getCurrentUser } from "../services/apiCalls";
+import { roles } from "../helpers/roles";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
 });
+
+const availableRoles = [roles.PATIENT, roles.HOSPITAL, roles.INSURER];
 
 export class Profile extends Component {
   constructor(props) {
@@ -89,7 +93,7 @@ export class Profile extends Component {
   }
 
   render() {
-    if (this.props.auth.loggedIn && this.props.auth.user)
+    if (!this.props.auth.loggedIn || !this.props.auth.user)
       return <Redirect to="/" />;
 
     return (
@@ -180,7 +184,14 @@ export class Profile extends Component {
                   onChange={(e) => {
                     this.handleChange(e);
                   }}
-                />
+                >
+                  {availableRoles.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
                 <TextField
                   name="aadhar"
                   fullWidth

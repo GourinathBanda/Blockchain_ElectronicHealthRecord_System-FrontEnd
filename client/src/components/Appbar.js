@@ -191,6 +191,13 @@ function Appbar(props) {
               >
                 Profile
               </MenuItem>
+              <MenuItem
+                onClick={(e) => {
+                  history.push("/smartcontract");
+                }}
+              >
+                Deployed Medical Record
+              </MenuItem>
               <MenuItem onClick={handleLogout}>Logout</MenuItem>
             </Menu>
           </div>

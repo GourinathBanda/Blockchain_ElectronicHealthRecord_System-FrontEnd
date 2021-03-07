@@ -15,6 +15,7 @@ contract Medical {
 
     function Read() public returns (string memory) {
         require(canRead[msg.sender] == true, "You do not have read permission");
+        canRead[msg.sender] = false;
         return medicalLocationHash;
     }
 
@@ -49,6 +50,10 @@ contract Medical {
 
     function CheckWritePermission() public view returns (bool) {
         return canWrite[msg.sender];
+    }
+
+    function CheckReadPermission() public view returns (bool) {
+        return canRead[msg.sender];
     }
 }
 

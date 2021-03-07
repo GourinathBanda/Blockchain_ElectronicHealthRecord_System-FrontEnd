@@ -71,9 +71,9 @@ export const handleRead = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    await contract.methods
+    return await contract.methods
       .Read()
-      .send({ from: account })
+      .call({ from: account })
       .then((response) => {
         console.log(response);
         return response;
@@ -143,12 +143,13 @@ export const grantWritePermission = async (account, address) => {
   }
 };
 
-export const checkReader = async (address) => {
+export const checkReader = async (address, readerAddress) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
-    return await contract.canRead
-      .call(address)
+    return await contract.methods
+      .CheckReadPermission()
+      .call({ from: readerAddress })
       .then((response) => {
         console.log(response);
         return response;
@@ -160,6 +161,7 @@ export const checkReader = async (address) => {
     console.log(err);
   }
 };
+
 
 export const checkWriter = async (address, writerAddress) => {
   try {

@@ -9,9 +9,12 @@ import { connect } from "react-redux";
 import { getBasicUserDetails } from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
 import Web3 from "web3";
-import { askReadPermission } from "../services/contractCalls";
+import { askReadPermission, checkReader } from "../services/contractCalls";
 import { askWritePermission } from "../services/contractCalls";
-import { grantWritePermission } from "../services/contractCalls";
+import {
+  grantWritePermission,
+  grantReadPermission,
+} from "../services/contractCalls";
 import { checkWriter } from "../services/contractCalls";
 import { roles } from "../helpers/roles";
 
@@ -20,17 +23,17 @@ const mapStateToProps = (state) => ({
 });
 
 // const mapDispatchToProps = (dispatch) => ({});
+function loadWeb3() {
+  if (window.ethereum) {
+    window.web3 = new Web3(window.ethereum);
+    window.ethereum.enable();
+  } else {
+    window.alert("Please link Metamask to avoid any errors.");
+  }
+}
 
 const Main = (props) => {
   useEffect(() => {
-    async function loadWeb3() {
-      if (window.ethereum) {
-        window.web3 = new Web3(window.ethereum);
-        await window.ethereum.enable();
-      } else {
-        window.alert("Please link Metamask to avoid any errors.");
-      }
-    }
     loadWeb3();
   }, []);
 
@@ -40,6 +43,7 @@ const Main = (props) => {
   const [openDialogView, setOpenDialogView] = useState(false);
   const [openDialogAdd, setOpenDialogAdd] = useState(false);
   const [openDialogGrantWrite, setOpenDialogGrantWrite] = useState(false);
+  const [openDialogGrantView, setOpenDialogGrantView] = useState(false);
   const [foundDetails, setFoundDetails] = useState(null);
 
   const buttonsView = [
@@ -71,6 +75,17 @@ const Main = (props) => {
     },
     {
       onClick: () => setOpenDialogGrantWrite(false),
+      text: "Cancel",
+    },
+  ];
+
+  const buttonsGrantView = [
+    {
+      onClick: () => handleGrantViewPermission(),
+      text: "Okay",
+    },
+    {
+      onClick: () => setOpenDialogGrantView(false),
       text: "Cancel",
     },
   ];
@@ -113,20 +128,29 @@ const Main = (props) => {
     setOpenDialogGrantWrite(true);
   };
 
+  const handleGrantView = () => {
+    setOpenDialogGrantView(true);
+  };
+
   const handleAskViewPermission = async () => {
     setOpenDialogView(false);
-    // ! check if has view permission
-    var permission = false; // ! fetch from server
-    // send ask permission to server
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
+
+    const res = await checkReader(address, accountsAvailable[0]);
+    if (res === true) {
+      return navigateToView();
+    }
+
     const response = await askReadPermission(accountsAvailable[0], address);
     console.log("response", response);
-    permission = response.status;
-    if (permission) {
-      // console.log('here', props.auth.user);
-      navigateToView();
-    }
+
+    setInterval(async () => {
+      const res = await checkReader(address, accountsAvailable[0]);
+      if (res === true) {
+        navigateToView();
+      }
+    }, 5000);
   };
 
   const handleAskAddPermission = async () => {
@@ -156,6 +180,16 @@ const Main = (props) => {
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = props.auth.user.scAccountAddress;
     const response = await grantWritePermission(accountsAvailable[0], address);
+    // console.log("response", response);
+    console.log(response);
+  };
+
+  const handleGrantViewPermission = async () => {
+    setOpenDialogGrantView(false);
+
+    const accountsAvailable = await window.web3.eth.getAccounts();
+    const address = props.auth.user.scAccountAddress;
+    const response = await grantReadPermission(accountsAvailable[0], address);
     // console.log("response", response);
     console.log(response);
   };
@@ -225,16 +259,18 @@ const Main = (props) => {
               <Typography>
                 {foundDetails.firstname + " " + foundDetails.lastname}
               </Typography>
-              <Button
-                variant="contained"
-                fullWidth
-                color="primary"
-                // href="/view"
-                onClick={handleView}
-                style={{ marginBottom: "8px" }}
-              >
-                View
-              </Button>
+              {props.auth.user && props.auth.user.role === roles.HOSPITAL && (
+                <Button
+                  variant="contained"
+                  fullWidth
+                  color="primary"
+                  // href="/view"
+                  onClick={handleView}
+                  style={{ marginBottom: "8px" }}
+                >
+                  View
+                </Button>
+              )}
               {props.auth.user && props.auth.user.role === roles.HOSPITAL && (
                 <Button
                   variant="contained"
@@ -279,20 +315,40 @@ const Main = (props) => {
             variant="contained"
             fullWidth
             color="primary"
-            style={{ marginBottom: "8px" }}
+            style={{ marginBottom: "8px", marginTop: "8px" }}
             onClick={handleGrantWrite}
           >
             Grant Write Permission
           </Button>
         )}
+
+        {props.auth.user && props.auth.user.role === roles.PATIENT && (
+          <Button
+            variant="contained"
+            fullWidth
+            color="primary"
+            style={{ marginBottom: "8px" }}
+            onClick={handleGrantView}
+          >
+            Grant View Permission
+          </Button>
+        )}
       </Container>
-      <DialogBox
-        // onClose={handleOnDialogClose}
-        text="Asking user abc for read permission"
-        title="Read Permission"
-        open={openDialogView}
-        buttons={buttonsView}
-      />
+      {foundDetails && (
+        <DialogBox
+          // onClose={handleOnDialogClose}
+          text={
+            "Asking user " +
+            foundDetails.firstname +
+            " " +
+            foundDetails.lastname +
+            " for read permission"
+          }
+          title="Read Permission"
+          open={openDialogView}
+          buttons={buttonsView}
+        />
+      )}
       {foundDetails && (
         <DialogBox
           // onClose={handleOnDialogClose}
@@ -311,9 +367,16 @@ const Main = (props) => {
       <DialogBox
         // onClose={handleOnDialogClose}
         text="Grant hospital abc for write permission"
-        title="Read Permission"
+        title="Write Permission"
         open={openDialogGrantWrite}
         buttons={buttonsGrantWrite}
+      />
+      <DialogBox
+        // onClose={handleOnDialogClose}
+        text="Grant hospital abc for view permission"
+        title="Read Permission"
+        open={openDialogGrantView}
+        buttons={buttonsGrantView}
       />
     </>
   );
