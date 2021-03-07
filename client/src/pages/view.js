@@ -5,16 +5,27 @@ import MedicalRecordCard from "../components/MedicalRecordCard";
 import { handleRead } from "../services/contractCalls";
 import { Button } from "@material-ui/core";
 
-function View(props) {
+var CryptoJS = require("crypto-js");
 
-  const [hash, setHash] = useState("");
+function View(props) {
+  
+  const [photo, setPhoto] = useState("");
 
   const getData = async () => {
-    const accountsAvailable = await window.web3.eth.getAccounts();
+    const accountsAvailable = await window.ethereum.request({ method: 'eth_accounts' });
     const address = details.scAccountAddress;
-    const response = await handleRead(accountsAvailable[0], address);
-    console.log("response", response);
-    setHash(response);
+    handleRead(accountsAvailable[0], address)
+      .then((response) => {
+        console.log("response", response);
+
+        const url = 'https://ipfs.infura.io/ipfs/'+response;
+        fetch(url)
+          .then(res => res.text())
+          .then(res2 => {
+            var bytes = CryptoJS.AES.decrypt(res2, "password");
+            setPhoto(bytes.toString(CryptoJS.enc.Utf8))
+          })
+      })
   };
   
   console.log(props);
@@ -28,7 +39,7 @@ function View(props) {
       <Appbar showTitle={showTitle} />
       <Container maxWidth="md" style={{ marginTop: "68px" }}>
         {
-          hash==="" ?
+          photo==="" ?
           <Button
             color="primary"
             onClick={getData}
@@ -37,7 +48,7 @@ function View(props) {
             View Files
           </Button>
           :
-          <img src={'https://ipfs.infura.io/ipfs/'+hash} />
+          <img src={photo} />
         }
         {/* <MedicalRecordCard />
         <MedicalRecordCard />

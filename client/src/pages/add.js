@@ -13,7 +13,8 @@ import Input from "@material-ui/core/Input";
 // import { apiURL } from "../helpers/config";
 // import { authHeader } from "../services/authHeader";
 import { handleWrite } from "../services/contractCalls";
-import cryptico from "cryptico";
+import AES from "crypto-js/aes"
+
 const ipfsClient = require('ipfs-http-client')
 const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
 
@@ -38,8 +39,15 @@ function View(props) {
   const handleChange = (e) => {
     setProgess(0);
     const file = e.target.files[0]; // accessing file
-    console.log(file);
-    setFile(file); // storing file
+    // console.log(file);
+    // setFile(file); // storing file
+
+    const reader = new window.FileReader()
+    reader.readAsDataURL(file)
+    reader.onloadend = () => {
+      setFile(AES.encrypt(reader.result, "password").toString());
+      console.log(file);
+    }
   };
 
   const cancelFileUpload = (e) => {
@@ -59,7 +67,7 @@ function View(props) {
   const saveOnSC = async (receivedHash) => {
     //const encryptedHash = cryptico.encrypt(receivedHash, details.encryptionKey);
     const encryptedHash = receivedHash;
-    const accountsAvailable = await window.web3.eth.getAccounts();
+    const accountsAvailable = await window.ethereum.request({ method: 'eth_accounts' });
     const address = details.scAccountAddress;
     const response = handleWrite(accountsAvailable[0], address, encryptedHash);
     console.log("response", response);
