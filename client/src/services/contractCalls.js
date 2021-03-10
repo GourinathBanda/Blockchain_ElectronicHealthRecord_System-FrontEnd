@@ -105,12 +105,12 @@ export const handleWrite = async (account, address, locationHash) => {
   }
 };
 
-export const grantReadPermission = async (account, address) => {
+export const grantReadPermission = async (account, address, locationHash) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     await contract.methods
-      .GrantReadPermission()
+      .GrantReadPermission(locationHash)
       .send({ from: account })
       .then((response) => {
         console.log(response);
@@ -151,7 +151,7 @@ export const checkReader = async (address, readerAddress) => {
       .CheckReadPermission()
       .call({ from: readerAddress })
       .then((response) => {
-        console.log(response);
+        console.log('checkReader response', response);
         return response;
       })
       .catch((err) => {
@@ -170,6 +170,25 @@ export const checkWriter = async (address, writerAddress) => {
     return await contract.methods
       .CheckWritePermission()
       .call({ from: writerAddress })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const viewLocationHash = async (account, address) => {
+  try {
+    const web3 = window.web3;
+    const contract = new web3.eth.Contract(abi, address);
+    return await contract.methods
+      .viewLocationHash()
+      .call({ from: account })
       .then((response) => {
         console.log(response);
         return response;
