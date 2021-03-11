@@ -6,7 +6,7 @@ contract Medical {
 
     address public reader;
     address public writer;
-    mapping(address => bool) public canRead;
+    mapping(address => string) public canRead;
     mapping(address => bool) public canWrite;
 
     constructor() public {
@@ -14,9 +14,10 @@ contract Medical {
     }
 
     function Read() public returns (string memory) {
-        require(canRead[msg.sender] == true, "You do not have read permission");
-        canRead[msg.sender] = false;
-        return medicalLocationHash;
+        // require(canRead[msg.sender] == true, "You do not have read permission");
+        string memory addr = canRead[msg.sender];
+        canRead[msg.sender] = "";
+        return addr;
     }
 
     function Write(string memory locationHash) public {
@@ -42,18 +43,22 @@ contract Medical {
         canWrite[writer] = true;
     }
 
-    function GrantReadPermission() public {
+    function GrantReadPermission(string memory encryptedLocationHash) public {
         require(owner == msg.sender, "You can not grant read permission");
         require(reader != address(0), "No reader!");
-        canRead[reader] = true;
+        canRead[reader] = encryptedLocationHash;
     }
 
     function CheckWritePermission() public view returns (bool) {
         return canWrite[msg.sender];
     }
 
-    function CheckReadPermission() public view returns (bool) {
+    function CheckReadPermission() public view returns (string memory) {
         return canRead[msg.sender];
+    }
+
+    function viewLocationHash() public view returns (string memory) {
+        return medicalLocationHash;
     }
 }
 

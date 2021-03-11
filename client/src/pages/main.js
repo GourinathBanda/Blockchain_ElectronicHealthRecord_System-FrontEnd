@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import { getBasicUserDetails } from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
 import Web3 from "web3";
-import { askReadPermission, checkReader } from "../services/contractCalls";
+import { askReadPermission, checkReader, viewLocationHash } from "../services/contractCalls";
 import { askWritePermission } from "../services/contractCalls";
 import {
   grantWritePermission,
@@ -96,7 +96,7 @@ const Main = (props) => {
     setPatientID("");
   };
 
-  const handleViewMyRecords = () => {};
+  const handleViewMyRecords = () => { };
 
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
@@ -138,16 +138,20 @@ const Main = (props) => {
     const address = foundDetails.scAccountAddress;
 
     const res = await checkReader(address, accountsAvailable[0]);
-    if (res === true) {
+    if (res.length !== 0) {
       return navigateToView();
     }
 
     const response = await askReadPermission(accountsAvailable[0], address);
     console.log("response", response);
 
+    // const res = await checkReader(address, accountsAvailable[0]);
+    // console.log("result", res);
+    // console.log('length', res.length);
+
     setInterval(async () => {
       const res = await checkReader(address, accountsAvailable[0]);
-      if (res === true) {
+      if (res.length !== 0) {
         navigateToView();
       }
     }, 5000);
@@ -189,7 +193,9 @@ const Main = (props) => {
 
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = props.auth.user.scAccountAddress;
-    const response = await grantReadPermission(accountsAvailable[0], address);
+    const hash = await viewLocationHash(accountsAvailable[0], address);
+    console.log('hash', hash)
+    const response = await grantReadPermission(accountsAvailable[0], address, hash);
     // console.log("response", response);
     console.log(response);
   };
@@ -297,19 +303,19 @@ const Main = (props) => {
 
         {((!foundDetails && patientID !== "") ||
           (foundDetails && foundDetails.scAccountAddress === "")) && (
-          <div>
-            <Typography>No record exists for patient ID:{patientID}</Typography>
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              style={{ marginBottom: "8px" }}
-              onClick={handleNoRecord}
-            >
-              Okay
+            <div>
+              <Typography>No record exists for patient ID:{patientID}</Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                color="primary"
+                style={{ marginBottom: "8px" }}
+                onClick={handleNoRecord}
+              >
+                Okay
             </Button>
-          </div>
-        )}
+            </div>
+          )}
         {props.auth.user && props.auth.user.role === roles.PATIENT && (
           <Button
             variant="contained"
