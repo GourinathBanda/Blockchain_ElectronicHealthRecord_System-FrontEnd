@@ -7,16 +7,17 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/";
-// import axios from "axios";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
-// import { apiURL } from "../helpers/config";
-// import { authHeader } from "../services/authHeader";
 import { handleWrite } from "../services/contractCalls";
-import AES from "crypto-js/aes"
+import cryptico from "cryptico";
 
-const ipfsClient = require('ipfs-http-client')
-const ipfs = ipfsClient({ host: 'ipfs.infura.io', port: '5001', protocol: 'https' })
+const ipfsClient = require("ipfs-http-client");
+const ipfs = ipfsClient({
+  host: "ipfs.infura.io",
+  port: "5001",
+  protocol: "https",
+});
 
 const useStyles = makeStyles((theme) => ({
   content: {
@@ -37,17 +38,20 @@ function View(props) {
   const details = props.history.location.data;
 
   const handleChange = (e) => {
+    console.log("Reading and Encrypting file");
     setProgess(0);
     const file = e.target.files[0]; // accessing file
-    // console.log(file);
-    // setFile(file); // storing file
+    //const encryptedHash = cryptico.encrypt(receivedHash, details.encryptionKey);
 
-    const reader = new window.FileReader()
-    reader.readAsDataURL(file)
+    const reader = new window.FileReader();
+    reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setFile(AES.encrypt(reader.result, "password").toString());
+      console.log("RESULT", reader.result);
+      const encryptedData = cryptico.encrypt(reader.result, "aadhar number");
+      setFile(encryptedData.toString());
+      // setFile(AES.encrypt(reader.result, "password").toString());
       console.log(file);
-    }
+    };
   };
 
   const cancelFileUpload = (e) => {
@@ -58,19 +62,24 @@ function View(props) {
 
   const uploadFile = async () => {
     setUploading(true);
-    const result = await ipfs.add(file)
+    const result = await ipfs.add(file);
     const hash = result.path;
-    console.log('ipfs', hash);
-    saveOnSC(hash);
+    console.log("ipfs", hash);
+    const encryptedHash = cryptico.encrypt(hash, details.encryptionKey);
+    saveOnSC(encryptedHash);
   };
 
-  const saveOnSC = async (receivedHash) => {
-    //const encryptedHash = cryptico.encrypt(receivedHash, details.encryptionKey);
-    const encryptedHash = receivedHash;
-    const accountsAvailable = await window.ethereum.request({ method: 'eth_accounts' });
+  const saveOnSC = async (encryptedHash) => {
+    const accountsAvailable = await window.ethereum.request({
+      method: "eth_accounts",
+    });
     const address = details.scAccountAddress;
     const response = handleWrite(accountsAvailable[0], address, encryptedHash);
     console.log("response", response);
+    if (response != null) {
+      setProgess(0);
+      setUploading(false);
+    }
   };
 
   const classes = useStyles();
