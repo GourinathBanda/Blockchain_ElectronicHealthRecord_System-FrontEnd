@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import { handleWrite } from "../services/contractCalls";
-import cryptico from "cryptico";
+import AES from "crypto-js/aes"
 
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
