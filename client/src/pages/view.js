@@ -3,7 +3,8 @@ import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
 import { handleRead } from "../services/contractCalls";
-import { Button, TextField } from "@material-ui/core";
+import TextField from "@material-ui/core";
+import Button from "@material-ui/core";
 import cryptico from "cryptico";
 import DialogBox from "../components/Dialog";
 import CryptoJS from "crypto-js";
@@ -13,7 +14,7 @@ function View(props) {
   const [photo, setPhoto] = useState("");
   const [hospitalPassPhrase, setHospitalPassPhrase] = useState("");
   const [openDialogView, setOpenDialogView] = useState(true);
-  const [masterFile, setMasterFile] = useState({});
+  const [masterFile, setMasterFile] = useState([]);
 
   const buttonsView = [
     {

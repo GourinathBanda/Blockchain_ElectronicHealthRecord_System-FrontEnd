@@ -6,7 +6,10 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
-import { getBasicUserDetails } from "../services/apiCalls";
+import {
+  getBasicUserDetails,
+  getBasicHospitalDetails,
+} from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
 import Web3 from "web3";
 import { roles } from "../helpers/roles";
@@ -199,7 +202,9 @@ const Main = (props) => {
       method: "eth_accounts",
     });
     // ! fetch from server
-    const hospitalEncryptionKey = "sdf";
+    const hospitalID = "hosp";
+    const hospitalDetails = await getBasicHospitalDetails(hospitalID);
+    const hospitalEncryptionKey = hospitalDetails.encryptionKey;
     const address = props.auth.user.scAccountAddress;
     const patientPrivateKey = cryptico.generateRSAKey(patientPassPhrase, 1024);
     const hash = await viewLocationHash(accountsAvailable[0], address);

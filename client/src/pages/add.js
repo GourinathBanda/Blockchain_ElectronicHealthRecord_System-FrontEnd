@@ -6,10 +6,12 @@ import Paper from "@material-ui/core/Paper";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import { makeStyles } from "@material-ui/core/";
+import DialogBox from "../components/Dialog";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
-import { handleWrite } from "../services/contractCalls";
+import TextField from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/";
+import { handleWrite, handleRead } from "../services/contractCalls";
 import AES from "crypto-js/aes";
 import cryptico from "cryptico";
 
@@ -34,10 +36,26 @@ function View(props) {
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
   const [masterFile, setMasterFile] = useState([]);
+  const [hospitalPassPhrase, setHospitalPassPhrase] = useState("");
+  const [openDialogView, setOpenDialogView] = useState(true);
   // const [snackBarOpen, setSnackBarOpen] = useState(false);
 
   const patientID = props.history.location.patientID;
   const details = props.history.location.data;
+
+  const buttonsView = [
+    {
+      onClick: () => setOpenDialogView(false),
+      text: "Okay",
+    },
+    {
+      onClick: () => {
+        setHospitalPassPhrase("");
+        setOpenDialogView(false);
+      },
+      text: "Cancel",
+    },
+  ];
 
   const handleChange = (e) => {
     console.log("Reading and Encrypting file");
@@ -58,7 +76,35 @@ function View(props) {
     setUploading(false);
   };
 
+  const getMasterFile = async () => {
+    const accountsAvailable = await window.ethereum.request({
+      method: "eth_accounts",
+    });
+    const address = details.scAccountAddress;
+
+    handleRead(accountsAvailable[0], address).then((response) => {
+      console.log("response", response);
+      const hospitalPrivateKey = cryptico.generateRSAKey(
+        hospitalPassPhrase,
+        1024
+      );
+      const decryptedDataHash = cryptico.decrypt(response, hospitalPrivateKey);
+
+      const url = "https://ipfs.infura.io/ipfs/" + decryptedDataHash;
+      fetch(url)
+        .then((res) => res.text())
+        .then((res2) => {
+          const jsonString = AES.decrypt(res2, "aadhar number");
+          const JSONMasterFile = JSON.parse(jsonString);
+          setMasterFile(JSONMasterFile);
+          console.log("Masterfile", JSONMasterFile);
+          // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
+        });
+    });
+  };
+
   const uploadFile = async () => {
+    await getMasterFile();
     setUploading(true);
     const result = await ipfs.add(file);
     const hash = result.path;
@@ -127,6 +173,26 @@ function View(props) {
           </Grid>
         </Paper>
       </Container>
+      <DialogBox
+        // onClose={handleOnDialogClose}
+        text="Please enter your passphrase"
+        title="Decrypt Data"
+        open={openDialogView}
+        buttons={buttonsView}
+      >
+        <TextField
+          name="hospitalPassPhrase"
+          fullWidth
+          label="Passphrase"
+          variant="outlined"
+          margin="normal"
+          required
+          value={hospitalPassPhrase}
+          onChange={(e) => {
+            setHospitalPassPhrase(e.target.value);
+          }}
+        />
+      </DialogBox>
       {/* <SnackBar open={snackBarOpen} />; */}
     </>
   );
