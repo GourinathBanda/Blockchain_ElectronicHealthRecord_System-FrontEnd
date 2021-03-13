@@ -10,7 +10,7 @@ import { makeStyles } from "@material-ui/core/";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import { handleWrite } from "../services/contractCalls";
-import cryptico from "cryptico";
+import AES from "crypto-js/aes"
 
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
@@ -46,10 +46,7 @@ function View(props) {
     const reader = new window.FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      console.log("RESULT", reader.result);
-      const encryptedData = cryptico.encrypt(reader.result, "aadhar number");
-      setFile(encryptedData.toString());
-      // setFile(AES.encrypt(reader.result, "password").toString());
+      setFile(AES.encrypt(reader.result, "password").toString());
       console.log(file);
     };
   };
@@ -65,8 +62,7 @@ function View(props) {
     const result = await ipfs.add(file);
     const hash = result.path;
     console.log("ipfs", hash);
-    const encryptedHash = cryptico.encrypt(hash, details.encryptionKey);
-    saveOnSC(encryptedHash);
+    saveOnSC(hash);
   };
 
   const saveOnSC = async (encryptedHash) => {
