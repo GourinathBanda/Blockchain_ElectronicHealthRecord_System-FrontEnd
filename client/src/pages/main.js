@@ -50,8 +50,9 @@ const Main = (props) => {
   const [openDialogAdd, setOpenDialogAdd] = useState(false);
   const [openDialogGrantWrite, setOpenDialogGrantWrite] = useState(false);
   const [openDialogGrantView, setOpenDialogGrantView] = useState(false);
-  const [foundDetails, setFoundDetails] = useState(null);
+  const [patientDetails, setPatientDetails] = useState(null);
   const [patientPassPhrase, setPatientPassPhrase] = useState("");
+  const [hospitalDetails, setHospitalDetails] = useState(null);
 
   const buttonsView = [
     {
@@ -99,7 +100,7 @@ const Main = (props) => {
 
   const handleNoRecord = (e) => {
     e.preventDefault();
-    setFoundDetails(null);
+    setPatientDetails(null);
     setPatientID("");
   };
 
@@ -109,7 +110,7 @@ const Main = (props) => {
     setPatientID(textInput);
     const details = await getBasicUserDetails(textInput);
     if (details !== undefined) {
-      setFoundDetails(details);
+      setPatientDetails(details);
     }
   };
 
@@ -142,7 +143,7 @@ const Main = (props) => {
   const handleAskViewPermission = async () => {
     setOpenDialogView(false);
     const accountsAvailable = await window.web3.eth.getAccounts();
-    const address = foundDetails.scAccountAddress;
+    const address = patientDetails.scAccountAddress;
 
     const res = await checkReader(address, accountsAvailable[0]);
     if (res.length !== 0) {
@@ -167,7 +168,7 @@ const Main = (props) => {
   const handleAskAddPermission = async () => {
     setOpenDialogAdd(false);
     const accountsAvailable = await window.web3.eth.getAccounts();
-    const address = foundDetails.scAccountAddress;
+    const address = patientDetails.scAccountAddress;
 
     const res = await checkWriter(address, accountsAvailable[0]);
     if (res === true) {
@@ -203,8 +204,9 @@ const Main = (props) => {
     });
     // ! fetch from server
     const hospitalID = "hosp";
-    const hospitalDetails = await getBasicHospitalDetails(hospitalID);
-    const hospitalEncryptionKey = hospitalDetails.encryptionKey;
+    const hd = await getBasicHospitalDetails(hospitalID);
+    setHospitalDetails(hd);
+    const hospitalEncryptionKey = hd.encryptionKey;
     const address = props.auth.user.scAccountAddress;
     const patientPrivateKey = cryptico.generateRSAKey(patientPassPhrase, 1024);
     const hash = await viewLocationHash(accountsAvailable[0], address);
@@ -227,7 +229,7 @@ const Main = (props) => {
     history.push({
       pathname: "/view",
       patientID: patientID,
-      data: foundDetails,
+      data: patientDetails,
     });
   };
 
@@ -235,11 +237,11 @@ const Main = (props) => {
     history.push({
       pathname: "/add",
       patientID: patientID,
-      data: foundDetails,
+      data: patientDetails,
     });
   };
 
-  // console.log("sdf", foundDetails);
+  // console.log("sdf", patientDetails);
   return (
     <>
       <Appbar />
@@ -278,15 +280,15 @@ const Main = (props) => {
           </div>
         )}
         {patientID !== "" &&
-          foundDetails &&
-          foundDetails.scAccountAddress !== "" && (
+          patientDetails &&
+          patientDetails.scAccountAddress !== "" && (
             <div className="ViewAdd">
               <Typography>
                 Patient Record Exists
                 <br /> Username: {patientID}
               </Typography>
               <Typography>
-                {foundDetails.firstname + " " + foundDetails.lastname}
+                {patientDetails.firstname + " " + patientDetails.lastname}
               </Typography>
               {props.auth.user && props.auth.user.role === roles.HOSPITAL && (
                 <Button
@@ -324,8 +326,8 @@ const Main = (props) => {
             </div>
           )}
 
-        {((!foundDetails && patientID !== "") ||
-          (foundDetails && foundDetails.scAccountAddress === "")) && (
+        {((!patientDetails && patientID !== "") ||
+          (patientDetails && patientDetails.scAccountAddress === "")) && (
           <div>
             <Typography>No record exists for patient ID:{patientID}</Typography>
             <Button
@@ -363,14 +365,14 @@ const Main = (props) => {
           </Button>
         )}
       </Container>
-      {foundDetails && (
+      {patientDetails && (
         <DialogBox
           // onClose={handleOnDialogClose}
           text={
             "Asking user " +
-            foundDetails.firstname +
+            patientDetails.firstname +
             " " +
-            foundDetails.lastname +
+            patientDetails.lastname +
             " for read permission"
           }
           title="Read Permission"
@@ -378,14 +380,14 @@ const Main = (props) => {
           buttons={buttonsView}
         />
       )}
-      {foundDetails && (
+      {patientDetails && (
         <DialogBox
           // onClose={handleOnDialogClose}
           text={
             "Asking user " +
-            foundDetails.firstname +
+            patientDetails.firstname +
             " " +
-            foundDetails.lastname +
+            patientDetails.lastname +
             " for write permission"
           }
           title="Write Permission"
@@ -395,14 +397,26 @@ const Main = (props) => {
       )}
       <DialogBox
         // onClose={handleOnDialogClose}
-        text="Grant hospital abc for write permission"
+        text={
+          "Grant hospital " +
+          hospitalDetails.firstname +
+          " " +
+          hospitalDetails.lastname +
+          " for write permission"
+        }
         title="Write Permission"
         open={openDialogGrantWrite}
         buttons={buttonsGrantWrite}
       />
       <DialogBox
         // onClose={handleOnDialogClose}
-        text="Grant hospital abc for view permission"
+        text={
+          "Grant hospital " +
+          hospitalDetails.firstname +
+          " " +
+          hospitalDetails.lastname +
+          " for view permission"
+        }
         title="Read Permission"
         open={openDialogGrantView}
         buttons={buttonsGrantView}
