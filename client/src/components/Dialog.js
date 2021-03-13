@@ -14,6 +14,7 @@ function DialogBox(props) {
         <DialogTitle>{title}</DialogTitle>
         <DialogContent>
           <DialogContentText>{text}</DialogContentText>
+          {props.children}
         </DialogContent>
         <DialogActions>
           {buttons.map((button, index) => (

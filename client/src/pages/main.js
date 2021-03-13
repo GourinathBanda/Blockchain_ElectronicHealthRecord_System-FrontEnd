@@ -9,14 +9,17 @@ import { connect } from "react-redux";
 import { getBasicUserDetails } from "../services/apiCalls";
 import DialogBox from "../components/Dialog";
 import Web3 from "web3";
-import { askReadPermission, checkReader, viewLocationHash } from "../services/contractCalls";
-import { askWritePermission } from "../services/contractCalls";
+import { roles } from "../helpers/roles";
+import cryptico from "cryptico";
 import {
+  askReadPermission,
+  checkReader,
+  viewLocationHash,
   grantWritePermission,
   grantReadPermission,
+  askWritePermission,
+  checkWriter,
 } from "../services/contractCalls";
-import { checkWriter } from "../services/contractCalls";
-import { roles } from "../helpers/roles";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -45,6 +48,7 @@ const Main = (props) => {
   const [openDialogGrantWrite, setOpenDialogGrantWrite] = useState(false);
   const [openDialogGrantView, setOpenDialogGrantView] = useState(false);
   const [foundDetails, setFoundDetails] = useState(null);
+  const [patientPassPhrase, setPatientPassPhrase] = useState("");
 
   const buttonsView = [
     {
@@ -96,7 +100,7 @@ const Main = (props) => {
     setPatientID("");
   };
 
-  const handleViewMyRecords = () => { };
+  const handleViewMyRecords = () => {};
 
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
@@ -191,11 +195,25 @@ const Main = (props) => {
   const handleGrantViewPermission = async () => {
     setOpenDialogGrantView(false);
 
-    const accountsAvailable = await window.web3.eth.getAccounts();
+    const accountsAvailable = await window.ethereum.request({
+      method: "eth_accounts",
+    });
+    // ! fetch from server
+    const hospitalEncryptionKey = "sdf";
     const address = props.auth.user.scAccountAddress;
+    const patientPrivateKey = cryptico.generateRSAKey(patientPassPhrase, 1024);
     const hash = await viewLocationHash(accountsAvailable[0], address);
-    console.log('hash', hash)
-    const response = await grantReadPermission(accountsAvailable[0], address, hash);
+    const decryptedHash = cryptico.decrypt(hash, patientPrivateKey);
+    const newEncryptedHash = cryptico.encrypt(
+      decryptedHash,
+      hospitalEncryptionKey
+    );
+    console.log("hash", newEncryptedHash);
+    const response = await grantReadPermission(
+      accountsAvailable[0],
+      address,
+      newEncryptedHash
+    );
     // console.log("response", response);
     console.log(response);
   };
@@ -303,19 +321,19 @@ const Main = (props) => {
 
         {((!foundDetails && patientID !== "") ||
           (foundDetails && foundDetails.scAccountAddress === "")) && (
-            <div>
-              <Typography>No record exists for patient ID:{patientID}</Typography>
-              <Button
-                variant="contained"
-                fullWidth
-                color="primary"
-                style={{ marginBottom: "8px" }}
-                onClick={handleNoRecord}
-              >
-                Okay
+          <div>
+            <Typography>No record exists for patient ID:{patientID}</Typography>
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              style={{ marginBottom: "8px" }}
+              onClick={handleNoRecord}
+            >
+              Okay
             </Button>
-            </div>
-          )}
+          </div>
+        )}
         {props.auth.user && props.auth.user.role === roles.PATIENT && (
           <Button
             variant="contained"
@@ -383,7 +401,20 @@ const Main = (props) => {
         title="Read Permission"
         open={openDialogGrantView}
         buttons={buttonsGrantView}
-      />
+      >
+        <TextField
+          name="patientPassPhrase"
+          fullWidth
+          label="Your Passphrase"
+          variant="outlined"
+          margin="normal"
+          required
+          value={patientPassPhrase}
+          onChange={(e) => {
+            setPatientPassPhrase(e.target.value);
+          }}
+        />
+      </DialogBox>
     </>
   );
 };
