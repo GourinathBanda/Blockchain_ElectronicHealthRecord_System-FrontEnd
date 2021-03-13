@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 
 const MedicalRecordCard = (props) => {
   const classes = useStyles();
-  const { date, name, viewpermission } = props;
+  const { date, name, viewpermission, onClickDownload, onClickView } = props;
   return (
     <Card className={classes.root} style={{ marginTop: "8px" }}>
       <CardContent>
@@ -44,8 +44,12 @@ const MedicalRecordCard = (props) => {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small">Download & Decrypt</Button>
-        <Button size="small">View</Button>
+        <Button size="small" onClick={onClickDownload}>
+          Download & Decrypt
+        </Button>
+        <Button size="small" onClick={onClickView}>
+          View
+        </Button>
       </CardActions>
     </Card>
   );

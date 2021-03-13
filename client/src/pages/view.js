@@ -58,8 +58,7 @@ function View(props) {
         fetch(url)
           .then((res) => res.text())
           .then((res2) => {
-            const jsonString = CryptoJS.AES.decrypt(res2, "aadhar number");
-            const JSONMasterFile = JSON.parse(jsonString);
+            const JSONMasterFile = JSON.parse(res2);
             setMasterFile(JSONMasterFile);
             console.log("Masterfile", JSONMasterFile);
             // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
@@ -69,7 +68,14 @@ function View(props) {
   };
 
   const getMedicalRecord = async (hash) => {
-    // fetch the particular medical record from ipfs
+    const url = "https://ipfs.infura.io/ipfs/" + hash;
+    fetch(url)
+      .then((res) => res.text())
+      .then((res2) => {
+        var bytes = CryptoJS.AES.decrypt(res2, "aadhar number");
+        const data = bytes.toString(CryptoJS.enc.Utf8);
+        setPhoto(data);
+      });
   };
 
   const patientID = props.history.location.patientID;
@@ -89,7 +95,13 @@ function View(props) {
           <img src={photo} alt="medical record" />
         )}
         {masterFile &&
-          masterFile.map((hash, index) => <MedicalRecordCard name={hash} />)}
+          masterFile.map((hash, index) => (
+            <MedicalRecordCard
+              name={hash}
+              key={index}
+              onClickDownload={() => getMedicalRecord(hash)}
+            />
+          ))}
       </Container>
 
       <DialogBox
