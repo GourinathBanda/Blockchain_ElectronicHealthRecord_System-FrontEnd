@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
-import { handleRead } from "../services/contractCalls";
+import { handleReadRevoke } from "../services/contractCalls";
 import { Button, TextField } from "@material-ui/core";
 var CryptoJS = require("crypto-js");
 
@@ -15,11 +15,11 @@ function View(props) {
     });
     const address = details.scAccountAddress;
 
-    handleRead(accountsAvailable[0], address)
+    handleReadRevoke(accountsAvailable[0], address)
       .then((response) => {
         console.log("response", response);
 
-        const url = 'https://ipfs.infura.io/ipfs/'+response;
+        const url = 'https://ipfs.infura.io/ipfs/' + response;
         fetch(url)
           .then(res => res.text())
           .then(res2 => {
@@ -51,7 +51,7 @@ function View(props) {
         <MedicalRecordCard /> */}
       </Container>
 
-      <DialogBox
+      {/* <DialogBox
         // onClose={handleOnDialogClose}
         text="Please enter your passphrase"
         title="Decrypt Data"
@@ -70,7 +70,7 @@ function View(props) {
             setHospitalPassPhrase(e.target.value);
           }}
         />
-      </DialogBox>
+      </DialogBox> */}
     </>
   );
 }

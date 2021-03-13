@@ -13,11 +13,8 @@ contract Medical {
         owner = tx.origin;
     }
 
-    function Read() public returns (string memory) {
-        // require(canRead[msg.sender] == true, "You do not have read permission");
-        string memory addr = canRead[msg.sender];
+    function RevokeRead() public returns (string memory) {
         canRead[msg.sender] = "";
-        return addr;
     }
 
     function Write(string memory locationHash) public {
@@ -53,7 +50,7 @@ contract Medical {
         return canWrite[msg.sender];
     }
 
-    function CheckReadPermission() public view returns (string memory) {
+    function Read() public view returns (string memory) {
         return canRead[msg.sender];
     }
 
@@ -61,19 +58,3 @@ contract Medical {
         return medicalLocationHash;
     }
 }
-
-// contract Adoption {
-//     address[16] public adopters;
-
-//     // Adopting a pet
-//     function adopt(uint256 petId) public returns (uint256) {
-//         require(petId >= 0 && petId <= 15);
-//         adopters[petId] = msg.sender;
-//         return petId;
-//     }
-
-//     // Retrieving the adopters
-//     function getAdopters() public view returns (address[16] memory) {
-//         return adopters;
-//     }
-// }

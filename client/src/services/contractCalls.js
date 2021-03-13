@@ -67,16 +67,26 @@ export const askWritePermission = async (account, address) => {
   }
 };
 
-export const handleRead = async (account, address) => {
+export const handleReadRevoke = async (account, address) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     return await contract.methods
       .Read()
       .call({ from: account })
-      .then((response) => {
+      .then(async (response) => {
         console.log(response);
-        return response;
+        return await contract.methods
+          .RevokeRead()
+          .send({ from: account })
+          .then((res) => {
+            console.log(res);
+            return response;
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+
       })
       .catch((err) => {
         console.log(err);
@@ -148,7 +158,7 @@ export const checkReader = async (address, readerAddress) => {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     return await contract.methods
-      .CheckReadPermission()
+      .Read()
       .call({ from: readerAddress })
       .then((response) => {
         console.log('checkReader response', response);
