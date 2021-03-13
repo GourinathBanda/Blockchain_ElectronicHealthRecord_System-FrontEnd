@@ -100,7 +100,7 @@ const Main = (props) => {
     setPatientID("");
   };
 
-  const handleViewMyRecords = () => {};
+  const handleViewMyRecords = () => { };
 
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
@@ -140,22 +140,24 @@ const Main = (props) => {
     setOpenDialogView(false);
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
-
-    const res = await checkReader(address, accountsAvailable[0]);
+    const username = props.auth.user.username;
+    console.log(foundDetails);
+    const res = await checkReader(address, accountsAvailable[0], username);
     if (res.length !== 0) {
       return navigateToView();
     }
 
-    const response = await askReadPermission(accountsAvailable[0], address);
+    const response = await askReadPermission(accountsAvailable[0], address, username);
     console.log("response", response);
 
     // const res = await checkReader(address, accountsAvailable[0]);
     // console.log("result", res);
     // console.log('length', res.length);
 
-    setInterval(async () => {
-      const res = await checkReader(address, accountsAvailable[0]);
+    let interval = setInterval(async () => {
+      const res = await checkReader(address, accountsAvailable[0], username);
       if (res.length !== 0) {
+        clearInterval(interval);
         navigateToView();
       }
     }, 5000);
@@ -165,18 +167,19 @@ const Main = (props) => {
     setOpenDialogAdd(false);
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
-
-    const res = await checkWriter(address, accountsAvailable[0]);
+    const username = props.auth.user.username;
+    const res = await checkWriter(address, accountsAvailable[0], username);
     if (res === true) {
       return navigateToAdd();
     }
 
-    const response = await askWritePermission(accountsAvailable[0], address);
+    const response = await askWritePermission(accountsAvailable[0], address, username);
     console.log("response", response);
 
-    setInterval(async () => {
-      const res = await checkWriter(address, accountsAvailable[0]);
+    let interval = setInterval(async () => {
+      const res = await checkWriter(address, accountsAvailable[0], username);
       if (res === true) {
+        clearInterval(interval);
         navigateToAdd();
       }
     }, 5000);
@@ -198,21 +201,24 @@ const Main = (props) => {
     const accountsAvailable = await window.ethereum.request({
       method: "eth_accounts",
     });
+    // Uncomment code to set up encryption functionality.
+
     // ! fetch from server
-    const hospitalEncryptionKey = "sdf";
+    // const hospitalEncryptionKey = "sdf";
     const address = props.auth.user.scAccountAddress;
-    const patientPrivateKey = cryptico.generateRSAKey(patientPassPhrase, 1024);
+    // const patientPrivateKey = cryptico.generateRSAKey(patientPassPhrase, 1024);
     const hash = await viewLocationHash(accountsAvailable[0], address);
-    const decryptedHash = cryptico.decrypt(hash, patientPrivateKey);
-    const newEncryptedHash = cryptico.encrypt(
-      decryptedHash,
-      hospitalEncryptionKey
-    );
-    console.log("hash", newEncryptedHash);
+    // const decryptedHash = cryptico.decrypt(hash, patientPrivateKey);
+    // const newEncryptedHash = cryptico.encrypt(
+    //   decryptedHash,
+    //   hospitalEncryptionKey
+    // );
+    // console.log("hash", newEncryptedHash);
     const response = await grantReadPermission(
       accountsAvailable[0],
       address,
-      newEncryptedHash
+      // newEncryptedHash
+      hash
     );
     // console.log("response", response);
     console.log(response);
@@ -321,19 +327,19 @@ const Main = (props) => {
 
         {((!foundDetails && patientID !== "") ||
           (foundDetails && foundDetails.scAccountAddress === "")) && (
-          <div>
-            <Typography>No record exists for patient ID:{patientID}</Typography>
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              style={{ marginBottom: "8px" }}
-              onClick={handleNoRecord}
-            >
-              Okay
+            <div>
+              <Typography>No record exists for patient ID:{patientID}</Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                color="primary"
+                style={{ marginBottom: "8px" }}
+                onClick={handleNoRecord}
+              >
+                Okay
             </Button>
-          </div>
-        )}
+            </div>
+          )}
         {props.auth.user && props.auth.user.role === roles.PATIENT && (
           <Button
             variant="contained"

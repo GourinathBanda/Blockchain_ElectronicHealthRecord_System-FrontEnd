@@ -2,9 +2,14 @@ import React, { useState } from "react";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
-import { handleRead } from "../services/contractCalls";
+import { handleReadRevoke } from "../services/contractCalls";
 import { Button, TextField } from "@material-ui/core";
+import { connect } from "react-redux";
 var CryptoJS = require("crypto-js");
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
 
 function View(props) {
   const [photo, setPhoto] = useState("");
@@ -14,12 +19,13 @@ function View(props) {
       method: "eth_accounts",
     });
     const address = details.scAccountAddress;
+    const username = props.auth.user.username;
 
-    handleRead(accountsAvailable[0], address)
+    handleReadRevoke(accountsAvailable[0], address, username)
       .then((response) => {
         console.log("response", response);
 
-        const url = 'https://ipfs.infura.io/ipfs/'+response;
+        const url = 'https://ipfs.infura.io/ipfs/' + response;
         fetch(url)
           .then(res => res.text())
           .then(res2 => {
@@ -51,7 +57,7 @@ function View(props) {
         <MedicalRecordCard /> */}
       </Container>
 
-      <DialogBox
+      {/* <DialogBox
         // onClose={handleOnDialogClose}
         text="Please enter your passphrase"
         title="Decrypt Data"
@@ -70,9 +76,9 @@ function View(props) {
             setHospitalPassPhrase(e.target.value);
           }}
         />
-      </DialogBox>
+      </DialogBox> */}
     </>
   );
 }
 
-export default View;
+export default connect(mapStateToProps)(View);
