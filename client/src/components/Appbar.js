@@ -114,9 +114,12 @@ function Appbar(props) {
       <AppBar position="fixed">
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            {showTitle || "DMR: Decentralized Medical Records"}
+            {props.auth.user.role + " / " + props.auth.user.username}
           </Typography>
-
+          <div className={classes.grow} />
+          <Typography variant="h6" className={classes.title}>
+            DMR
+          </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
             <IconButton

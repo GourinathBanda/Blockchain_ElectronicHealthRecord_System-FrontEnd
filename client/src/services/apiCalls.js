@@ -57,11 +57,10 @@ export const getBasicUserDetails = (id) => {
     });
 };
 
-// ! TODO BACKEND
-export const fetchSalt = () => {
+export const getBasicHospitalDetails = (id) => {
   return axios({
     method: "get",
-    url: apiURL + "/api/users/fetchsalt",
+    url: apiURL + "/api/users/hospitalKey/" + id,
     headers: authHeader(),
   })
     .then((response) => {
