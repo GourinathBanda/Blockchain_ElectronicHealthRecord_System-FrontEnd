@@ -39,7 +39,6 @@ function Add(props) {
   const [progress, setProgess] = useState(0); // progess bar
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
-  const [masterFile, setMasterFile] = useState([]);
   const [hospitalPassPhrase, setHospitalPassPhrase] = useState("");
   const [openDialogView, setOpenDialogView] = useState(true);
   // const [snackBarOpen, setSnackBarOpen] = useState(false);
@@ -87,12 +86,12 @@ function Add(props) {
     const address = patientDetails.scAccountAddress;
     const username = props.auth.user.username;
 
-    handleReadRevoke(accountsAvailable[0], address, username).then(
+    return handleReadRevoke(accountsAvailable[0], address, username).then(
       (response) => {
         console.log("response", response);
 
         if (!response) {
-          return;
+          return [];
         }
         const hospitalPrivateKey = cryptico.generateRSAKey(
           hospitalPassPhrase,
@@ -105,13 +104,12 @@ function Add(props) {
 
         const url =
           "https://ipfs.infura.io/ipfs/" + decryptedDataHash.plaintext;
-        fetch(url)
+        return fetch(url)
           .then((res) => res.text())
           .then((res2) => {
-            const jsonString = AES.decrypt(res2, "aadhar number");
-            const JSONMasterFile = JSON.parse(jsonString);
-            setMasterFile(JSONMasterFile);
-            console.log("Masterfile", JSONMasterFile);
+            const JSONMasterFile = JSON.parse(res2);
+            console.log("Current Masterfile", JSONMasterFile);
+            return JSONMasterFile;
             // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
           });
       }
@@ -119,13 +117,13 @@ function Add(props) {
   };
 
   const uploadFile = async () => {
-    await getMasterFile();
+    let masterFile = await getMasterFile();
     setUploading(true);
     const result = await ipfs.add(file);
     const hash = result.path;
     console.log("ipfs", hash);
     masterFile.push(hash);
-    console.log("masterFile", masterFile);
+    console.log("State masterFile", masterFile);
     const newMasterFile = JSON.stringify(masterFile);
     const result2 = await ipfs.add(newMasterFile);
     const masterFileHash = result2.path;
