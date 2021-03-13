@@ -49,7 +49,7 @@ const Main = (props) => {
   const [openDialogView, setOpenDialogView] = useState(false);
   const [openDialogAdd, setOpenDialogAdd] = useState(false);
   const [openDialogGrantWrite, setOpenDialogGrantWrite] = useState(false);
-  const [openDialogGrantView, setOpenDialogGrantView] = useState(false);
+  const [openDialogGrantRead, setOpenDialogGrantRead] = useState(false);
   const [patientDetails, setPatientDetails] = useState(null);
   const [patientPassPhrase, setPatientPassPhrase] = useState("");
   const [hospitalDetails, setHospitalDetails] = useState(null);
@@ -89,11 +89,11 @@ const Main = (props) => {
 
   const buttonsGrantView = [
     {
-      onClick: () => handleGrantViewPermission(),
+      onClick: () => handleGrantReadPermission(),
       text: "Okay",
     },
     {
-      onClick: () => setOpenDialogGrantView(false),
+      onClick: () => setOpenDialogGrantRead(false),
       text: "Cancel",
     },
   ];
@@ -137,7 +137,7 @@ const Main = (props) => {
   };
 
   const handleGrantView = () => {
-    setOpenDialogGrantView(true);
+    setOpenDialogGrantRead(true);
   };
 
   const handleAskViewPermission = async () => {
@@ -196,14 +196,14 @@ const Main = (props) => {
     console.log(response);
   };
 
-  const handleGrantViewPermission = async () => {
-    setOpenDialogGrantView(false);
+  const handleGrantReadPermission = async () => {
+    setOpenDialogGrantRead(false);
 
     const accountsAvailable = await window.ethereum.request({
       method: "eth_accounts",
     });
     // ! fetch from server
-    const hospitalID = "hosp";
+    const hospitalID = "Jordan";
     const hd = await getBasicHospitalDetails(hospitalID);
     setHospitalDetails(hd);
     const hospitalEncryptionKey = hd.encryptionKey;
@@ -395,45 +395,49 @@ const Main = (props) => {
           buttons={buttonsAdd}
         />
       )}
-      <DialogBox
-        // onClose={handleOnDialogClose}
-        text={
-          "Grant hospital " +
-          hospitalDetails.firstname +
-          " " +
-          hospitalDetails.lastname +
-          " for write permission"
-        }
-        title="Write Permission"
-        open={openDialogGrantWrite}
-        buttons={buttonsGrantWrite}
-      />
-      <DialogBox
-        // onClose={handleOnDialogClose}
-        text={
-          "Grant hospital " +
-          hospitalDetails.firstname +
-          " " +
-          hospitalDetails.lastname +
-          " for view permission"
-        }
-        title="Read Permission"
-        open={openDialogGrantView}
-        buttons={buttonsGrantView}
-      >
-        <TextField
-          name="patientPassPhrase"
-          fullWidth
-          label="Your Passphrase"
-          variant="outlined"
-          margin="normal"
-          required
-          value={patientPassPhrase}
-          onChange={(e) => {
-            setPatientPassPhrase(e.target.value);
-          }}
+      {hospitalDetails && (
+        <DialogBox
+          // onClose={handleOnDialogClose}
+          text={
+            "Grant hospital " +
+            hospitalDetails.firstname +
+            " " +
+            hospitalDetails.lastname +
+            " for write permission"
+          }
+          title="Write Permission"
+          open={openDialogGrantWrite}
+          buttons={buttonsGrantWrite}
         />
-      </DialogBox>
+      )}
+      {hospitalDetails && (
+        <DialogBox
+          // onClose={handleOnDialogClose}
+          text={
+            "Grant hospital " +
+            hospitalDetails.firstname +
+            " " +
+            hospitalDetails.lastname +
+            " for view permission"
+          }
+          title="Read Permission"
+          open={openDialogGrantRead}
+          buttons={buttonsGrantView}
+        >
+          <TextField
+            name="patientPassPhrase"
+            fullWidth
+            label="Your Passphrase"
+            variant="outlined"
+            margin="normal"
+            required
+            value={patientPassPhrase}
+            onChange={(e) => {
+              setPatientPassPhrase(e.target.value);
+            }}
+          />
+        </DialogBox>
+      )}
     </>
   );
 };

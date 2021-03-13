@@ -9,7 +9,7 @@ import Grid from "@material-ui/core/Grid";
 import DialogBox from "../components/Dialog";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
-import TextField from "@material-ui/core";
+import TextField from "@material-ui/core/TextField";
 import { makeStyles } from "@material-ui/core/";
 import { handleWrite, handleRead } from "../services/contractCalls";
 import AES from "crypto-js/aes";
@@ -83,7 +83,7 @@ function View(props) {
     const address = details.scAccountAddress;
 
     handleRead(accountsAvailable[0], address).then((response) => {
-      console.log("response", response);
+      console.log("READ response", response);
       const hospitalPrivateKey = cryptico.generateRSAKey(
         hospitalPassPhrase,
         1024

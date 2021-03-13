@@ -3,8 +3,8 @@ import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
 import { handleRead } from "../services/contractCalls";
-import TextField from "@material-ui/core";
-import Button from "@material-ui/core";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
 import cryptico from "cryptico";
 import DialogBox from "../components/Dialog";
 import CryptoJS from "crypto-js";
@@ -57,7 +57,16 @@ function View(props) {
     });
   };
 
-  console.log(props);
+  const getMedicalRecord = async (hash) => {
+    // fetch the particular medical record from ipfs
+  };
+
+  // const MedicalRecords = masterFile.map((hash, index) => (
+  //   <MedicalRecordCard name={hash} />
+  // ));
+
+  // console.log(MedicalRecords);
+
   const patientID = props.history.location.patientID;
   const details = props.history.location.data;
   // TODO: check for viewing permission, other navigate away
@@ -74,6 +83,9 @@ function View(props) {
         ) : (
           <img src={photo} alt="medical record" />
         )}
+        {masterFile &&
+          masterFile.map((hash, index) => <MedicalRecordCard name={hash} />)}
+        {/* <M1edicalRecords /> */}
         {/* <MedicalRecordCard />
         <MedicalRecordCard />
         <MedicalRecordCard /> */}
