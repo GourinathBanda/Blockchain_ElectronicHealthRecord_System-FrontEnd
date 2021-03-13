@@ -4,10 +4,30 @@ import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
 import { handleRead } from "../services/contractCalls";
 import { Button, TextField } from "@material-ui/core";
-var CryptoJS = require("crypto-js");
+import cryptico from "cryptico";
+import DialogBox from "../components/Dialog";
+import CryptoJS from "crypto-js";
+// var CryptoJS = require("crypto-js");
 
 function View(props) {
   const [photo, setPhoto] = useState("");
+  const [hospitalPassPhrase, setHospitalPassPhrase] = useState("");
+  const [openDialogView, setOpenDialogView] = useState(true);
+  const [masterFile, setMasterFile] = useState({});
+
+  const buttonsView = [
+    {
+      onClick: () => setOpenDialogView(false),
+      text: "Okay",
+    },
+    {
+      onClick: () => {
+        setHospitalPassPhrase("");
+        setOpenDialogView(false);
+      },
+      text: "Cancel",
+    },
+  ];
 
   const getData = async () => {
     const accountsAvailable = await window.ethereum.request({
@@ -15,18 +35,25 @@ function View(props) {
     });
     const address = details.scAccountAddress;
 
-    handleRead(accountsAvailable[0], address)
-      .then((response) => {
-        console.log("response", response);
+    handleRead(accountsAvailable[0], address).then((response) => {
+      console.log("response", response);
+      const hospitalPrivateKey = cryptico.generateRSAKey(
+        hospitalPassPhrase,
+        1024
+      );
+      const decryptedDataHash = cryptico.decrypt(response, hospitalPrivateKey);
 
-        const url = 'https://ipfs.infura.io/ipfs/'+response;
-        fetch(url)
-          .then(res => res.text())
-          .then(res2 => {
-            var bytes = CryptoJS.AES.decrypt(res2, "password");
-            setPhoto(bytes.toString(CryptoJS.enc.Utf8))
-          })
-      })
+      const url = "https://ipfs.infura.io/ipfs/" + decryptedDataHash;
+      fetch(url)
+        .then((res) => res.text())
+        .then((res2) => {
+          const jsonString = CryptoJS.AES.decrypt(res2, "aadhar number");
+          const JSONMasterFile = JSON.parse(jsonString);
+          setMasterFile(JSONMasterFile);
+          console.log("Masterfile", JSONMasterFile);
+          // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
+        });
+    });
   };
 
   console.log(props);
@@ -44,7 +71,7 @@ function View(props) {
             View Files
           </Button>
         ) : (
-          <img src={photo} />
+          <img src={photo} alt="medical record" />
         )}
         {/* <MedicalRecordCard />
         <MedicalRecordCard />

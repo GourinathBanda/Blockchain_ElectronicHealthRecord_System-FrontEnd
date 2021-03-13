@@ -10,7 +10,8 @@ import { makeStyles } from "@material-ui/core/";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import { handleWrite } from "../services/contractCalls";
-import AES from "crypto-js/aes"
+import AES from "crypto-js/aes";
+import cryptico from "cryptico";
 
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
@@ -32,6 +33,7 @@ function View(props) {
   const [progress, setProgess] = useState(0); // progess bar
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
+  const [masterFile, setMasterFile] = useState([]);
   // const [snackBarOpen, setSnackBarOpen] = useState(false);
 
   const patientID = props.history.location.patientID;
@@ -46,8 +48,7 @@ function View(props) {
     const reader = new window.FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setFile(AES.encrypt(reader.result, "password").toString());
-      console.log(file);
+      setFile(AES.encrypt(reader.result, "aadhar number").toString());
     };
   };
 
@@ -62,7 +63,14 @@ function View(props) {
     const result = await ipfs.add(file);
     const hash = result.path;
     console.log("ipfs", hash);
-    saveOnSC(hash);
+    masterFile.push(hash);
+    const newMasterFile = JSON.stringify(masterFile);
+    const masterFileHash = await ipfs.add(newMasterFile);
+    const encryptedMasterFileHash = cryptico.encrypt(
+      masterFileHash,
+      details.encryptionKey
+    );
+    saveOnSC(encryptedMasterFileHash);
   };
 
   const saveOnSC = async (encryptedHash) => {
