@@ -12,7 +12,7 @@ import { makeStyles } from "@material-ui/core/";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import TextField from "@material-ui/core/TextField";
-import { handleWrite, handleRead } from "../services/contractCalls";
+import { handleWrite, handleReadRevoke } from "../services/contractCalls";
 import AES from "crypto-js/aes";
 import cryptico from "cryptico";
 
@@ -34,9 +34,8 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 
-function View(props) {
-  const [file, setFile] = useState(""); // storing the uploaded file
-  // storing the recived file from backend
+function Add(props) {
+  const [file, setFile] = useState("");
   const [progress, setProgess] = useState(0); // progess bar
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
@@ -46,7 +45,7 @@ function View(props) {
   // const [snackBarOpen, setSnackBarOpen] = useState(false);
 
   const patientID = props.history.location.patientID;
-  const details = props.history.location.data;
+  const patientDetails = props.history.location.data;
 
   const buttonsView = [
     {
@@ -66,7 +65,7 @@ function View(props) {
     console.log("Reading and Encrypting file");
     setProgess(0);
     const file = e.target.files[0]; // accessing file
-    //const encryptedHash = cryptico.encrypt(receivedHash, details.encryptionKey);
+    //const encryptedHash = cryptico.encrypt(receivedHash, patientDetails.encryptionKey);
 
     const reader = new window.FileReader();
     reader.readAsDataURL(file);
@@ -77,7 +76,7 @@ function View(props) {
 
   const cancelFileUpload = (e) => {
     setProgess(0);
-    // do something to cancel the progress
+    // ! do something to cancel the progress
     setUploading(false);
   };
 
@@ -85,27 +84,38 @@ function View(props) {
     const accountsAvailable = await window.ethereum.request({
       method: "eth_accounts",
     });
-    const address = details.scAccountAddress;
+    const address = patientDetails.scAccountAddress;
+    const username = props.auth.user.username;
 
-    handleRead(accountsAvailable[0], address).then((response) => {
-      console.log("READ response", response);
-      const hospitalPrivateKey = cryptico.generateRSAKey(
-        hospitalPassPhrase,
-        1024
-      );
-      const decryptedDataHash = cryptico.decrypt(response, hospitalPrivateKey);
+    handleReadRevoke(accountsAvailable[0], address, username).then(
+      (response) => {
+        console.log("response", response);
 
-      const url = "https://ipfs.infura.io/ipfs/" + decryptedDataHash;
-      fetch(url)
-        .then((res) => res.text())
-        .then((res2) => {
-          const jsonString = AES.decrypt(res2, "aadhar number");
-          const JSONMasterFile = JSON.parse(jsonString);
-          setMasterFile(JSONMasterFile);
-          console.log("Masterfile", JSONMasterFile);
-          // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
-        });
-    });
+        if (!response) {
+          return;
+        }
+        const hospitalPrivateKey = cryptico.generateRSAKey(
+          hospitalPassPhrase,
+          1024
+        );
+        const decryptedDataHash = cryptico.decrypt(
+          response,
+          hospitalPrivateKey
+        );
+
+        const url =
+          "https://ipfs.infura.io/ipfs/" + decryptedDataHash.plaintext;
+        fetch(url)
+          .then((res) => res.text())
+          .then((res2) => {
+            const jsonString = AES.decrypt(res2, "aadhar number");
+            const JSONMasterFile = JSON.parse(jsonString);
+            setMasterFile(JSONMasterFile);
+            console.log("Masterfile", JSONMasterFile);
+            // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
+          });
+      }
+    );
   };
 
   const uploadFile = async () => {
@@ -115,22 +125,31 @@ function View(props) {
     const hash = result.path;
     console.log("ipfs", hash);
     masterFile.push(hash);
+    console.log("masterFile", masterFile);
     const newMasterFile = JSON.stringify(masterFile);
-    const masterFileHash = await ipfs.add(newMasterFile);
+    const result2 = await ipfs.add(newMasterFile);
+    const masterFileHash = result2.path;
+    console.log("new masterfilehash", masterFileHash);
     const encryptedMasterFileHash = cryptico.encrypt(
       masterFileHash,
-      details.encryptionKey
+      patientDetails.encryptionKey
     );
-    saveOnSC(encryptedMasterFileHash);
+    console.log("encryptedMasterFileHash", encryptedMasterFileHash);
+    saveOnSC(encryptedMasterFileHash.cipher);
   };
 
   const saveOnSC = async (encryptedHash) => {
     const accountsAvailable = await window.ethereum.request({
       method: "eth_accounts",
     });
-    const address = details.scAccountAddress;
+    const address = patientDetails.scAccountAddress;
     const username = props.auth.user.username;
-    const response = handleWrite(accountsAvailable[0], address, encryptedHash, username);
+    const response = handleWrite(
+      accountsAvailable[0],
+      address,
+      encryptedHash,
+      username
+    );
     console.log("response", response);
     if (response != null) {
       setProgess(0);
@@ -204,4 +223,4 @@ function View(props) {
   );
 }
 
-export default connect(mapStateToProps)(View);
+export default connect(mapStateToProps)(Add);

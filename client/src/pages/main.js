@@ -104,7 +104,7 @@ const Main = (props) => {
     setPatientID("");
   };
 
-  const handleViewMyRecords = () => { };
+  const handleViewMyRecords = () => {};
 
   const handleSearchUser = async (id) => {
     setPatientID(textInput);
@@ -132,34 +132,41 @@ const Main = (props) => {
     }
   };
 
-  const handleGrantWrite = () => {
+  const handleGrantWrite = async () => {
+    const hospitalID = "Fatima";
+    const hd = await getBasicHospitalDetails(hospitalID);
+    setHospitalDetails(hd);
     setOpenDialogGrantWrite(true);
   };
 
-  const handleGrantView = () => {
+  const handleGrantView = async () => {
+    const hospitalID = "Fatima";
+    const hd = await getBasicHospitalDetails(hospitalID);
+    setHospitalDetails(hd);
     setOpenDialogGrantRead(true);
   };
 
   const handleAskViewPermission = async () => {
     setOpenDialogView(false);
     const accountsAvailable = await window.web3.eth.getAccounts();
-    const address = foundDetails.scAccountAddress;
+    const address = patientDetails.scAccountAddress;
     const username = props.auth.user.username;
-    console.log(foundDetails);
+    console.log(patientDetails);
     const res = await checkReader(address, accountsAvailable[0], username);
     if (res.length !== 0) {
       return navigateToView();
     }
 
-    const response = await askReadPermission(accountsAvailable[0], address, username);
-    console.log("response", response);
-
-    // const res = await checkReader(address, accountsAvailable[0]);
-    // console.log("result", res);
-    // console.log('length', res.length);
+    const response = await askReadPermission(
+      accountsAvailable[0],
+      address,
+      username
+    );
+    console.log("askReadPermission response", response);
 
     let interval = setInterval(async () => {
       const res = await checkReader(address, accountsAvailable[0], username);
+      console.log("checkReader response2", res);
       if (res.length !== 0) {
         clearInterval(interval);
         navigateToView();
@@ -170,14 +177,18 @@ const Main = (props) => {
   const handleAskAddPermission = async () => {
     setOpenDialogAdd(false);
     const accountsAvailable = await window.web3.eth.getAccounts();
-    const address = foundDetails.scAccountAddress;
+    const address = patientDetails.scAccountAddress;
     const username = props.auth.user.username;
     const res = await checkWriter(address, accountsAvailable[0], username);
     if (res === true) {
       return navigateToAdd();
     }
 
-    const response = await askWritePermission(accountsAvailable[0], address, username);
+    const response = await askWritePermission(
+      accountsAvailable[0],
+      address,
+      username
+    );
     console.log("response", response);
 
     let interval = setInterval(async () => {
@@ -195,7 +206,6 @@ const Main = (props) => {
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = props.auth.user.scAccountAddress;
     const response = await grantWritePermission(accountsAvailable[0], address);
-    // console.log("response", response);
     console.log(response);
   };
 
@@ -205,35 +215,27 @@ const Main = (props) => {
     const accountsAvailable = await window.ethereum.request({
       method: "eth_accounts",
     });
-    // Uncomment code to set up encryption functionality.
-
-    // ! fetch from server
-    const hospitalID = "Jordan";
-    const hd = await getBasicHospitalDetails(hospitalID);
-    setHospitalDetails(hd);
-    const hospitalEncryptionKey = hd.encryptionKey;
-    
-    const hospitalID = "Jordan";
-    const hd = await getBasicHospitalDetails(hospitalID);
-    setHospitalDetails(hd);
-    const hospitalEncryptionKey = hd.encryptionKey;
     const address = props.auth.user.scAccountAddress;
-    // const patientPrivateKey = cryptico.generateRSAKey(patientPassPhrase, 1024);
-    const hash = await viewLocationHash(accountsAvailable[0], address);
-    // const decryptedHash = cryptico.decrypt(hash, patientPrivateKey);
-    // const newEncryptedHash = cryptico.encrypt(
-    //   decryptedHash,
-    //   hospitalEncryptionKey
-    // );
-    // console.log("hash", newEncryptedHash);
-    const response = await grantReadPermission(
+
+    console.log("patientPassPhrase", patientPassPhrase);
+    let decryptedHash = cryptico.decrypt(
+      await viewLocationHash(accountsAvailable[0], address),
+      cryptico.generateRSAKey(patientPassPhrase, 1024)
+    );
+    console.log("actual decrypted hash", decryptedHash);
+
+    console.log("hospitalDetails", hospitalDetails);
+    const hospitalEncryptionKey = hospitalDetails.encryptionKey;
+    const newEncryptedHash = cryptico.encrypt(
+      decryptedHash.plaintext,
+      hospitalEncryptionKey
+    );
+    console.log("newEncryptedHash", newEncryptedHash.cipher);
+    await grantReadPermission(
       accountsAvailable[0],
       address,
-      // newEncryptedHash
-      hash
+      newEncryptedHash.cipher
     );
-    // console.log("response", response);
-    console.log(response);
   };
 
   const navigateToView = () => {
@@ -348,9 +350,8 @@ const Main = (props) => {
               onClick={handleNoRecord}
             >
               Okay
-
             </Button>
-            </div>
+          </div>
         )}
         {props.auth.user && props.auth.user.role === roles.PATIENT && (
           <Button

@@ -86,7 +86,6 @@ export const handleReadRevoke = async (account, address, username) => {
           .catch((err) => {
             console.log(err);
           });
-
       })
       .catch((err) => {
         console.log(err);
@@ -161,7 +160,7 @@ export const checkReader = async (address, readerAddress, username) => {
       .Read(username)
       .call({ from: readerAddress })
       .then((response) => {
-        console.log('checkReader response', response);
+        console.log("checkReader response1", response);
         return response;
       })
       .catch((err) => {
@@ -171,7 +170,6 @@ export const checkReader = async (address, readerAddress, username) => {
     console.log(err);
   }
 };
-
 
 export const checkWriter = async (address, writerAddress, username) => {
   try {

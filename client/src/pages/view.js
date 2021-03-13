@@ -2,13 +2,14 @@ import React, { useState } from "react";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
-import { handleRead, handleReadRevoke } from "../services/contractCalls";
+import { handleReadRevoke } from "../services/contractCalls";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import cryptico from "cryptico";
 import DialogBox from "../components/Dialog";
 import CryptoJS from "crypto-js";
+
 const mapStateToProps = (state) => ({
   auth: state.auth,
 });
@@ -39,38 +40,37 @@ function View(props) {
     });
     const address = details.scAccountAddress;
     const username = props.auth.user.username;
-    
-    handleReadRevoke(accountsAvailable[0], address, username)
-      .then((response) => {
+
+    handleReadRevoke(accountsAvailable[0], address, username).then(
+      (response) => {
         console.log("response", response);
         const hospitalPrivateKey = cryptico.generateRSAKey(
           hospitalPassPhrase,
           1024
         );
-        const decryptedDataHash = cryptico.decrypt(response, hospitalPrivateKey);
-  
-        const url = 'https://ipfs.infura.io/ipfs/' + response;
+        const decryptedDataHash = cryptico.decrypt(
+          response,
+          hospitalPrivateKey
+        );
+        console.log("decrypted hash", decryptedDataHash.plaintext);
+        const url =
+          "https://ipfs.infura.io/ipfs/" + decryptedDataHash.plaintext;
         fetch(url)
-          .then(res => res.text())
-          .then(res2 => {
-          const jsonString = CryptoJS.AES.decrypt(res2, "aadhar number");
-          const JSONMasterFile = JSON.parse(jsonString);
-          setMasterFile(JSONMasterFile);
-          console.log("Masterfile", JSONMasterFile);
-          // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
-          })
-      })
-    
-      const getMedicalRecord = async (hash) => {
-    // fetch the particular medical record from ipfs
-
+          .then((res) => res.text())
+          .then((res2) => {
+            const jsonString = CryptoJS.AES.decrypt(res2, "aadhar number");
+            const JSONMasterFile = JSON.parse(jsonString);
+            setMasterFile(JSONMasterFile);
+            console.log("Masterfile", JSONMasterFile);
+            // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
+          });
+      }
+    );
   };
 
-  // const MedicalRecords = masterFile.map((hash, index) => (
-  //   <MedicalRecordCard name={hash} />
-  // ));
-
-  // console.log(MedicalRecords);
+  const getMedicalRecord = async (hash) => {
+    // fetch the particular medical record from ipfs
+  };
 
   const patientID = props.history.location.patientID;
   const details = props.history.location.data;
@@ -90,13 +90,9 @@ function View(props) {
         )}
         {masterFile &&
           masterFile.map((hash, index) => <MedicalRecordCard name={hash} />)}
-        {/* <M1edicalRecords /> */}
-        {/* <MedicalRecordCard />
-        <MedicalRecordCard />
-        <MedicalRecordCard /> */}
       </Container>
 
-      {/* <DialogBox
+      <DialogBox
         // onClose={handleOnDialogClose}
         text="Please enter your passphrase"
         title="Decrypt Data"
@@ -115,7 +111,7 @@ function View(props) {
             setHospitalPassPhrase(e.target.value);
           }}
         />
-      </DialogBox> */}
+      </DialogBox>
     </>
   );
 }
