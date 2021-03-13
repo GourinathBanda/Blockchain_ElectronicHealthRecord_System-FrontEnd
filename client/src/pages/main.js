@@ -140,22 +140,24 @@ const Main = (props) => {
     setOpenDialogView(false);
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
-
-    const res = await checkReader(address, accountsAvailable[0]);
+    const username = props.auth.user.username;
+    console.log(foundDetails);
+    const res = await checkReader(address, accountsAvailable[0], username);
     if (res.length !== 0) {
       return navigateToView();
     }
 
-    const response = await askReadPermission(accountsAvailable[0], address);
+    const response = await askReadPermission(accountsAvailable[0], address, username);
     console.log("response", response);
 
     // const res = await checkReader(address, accountsAvailable[0]);
     // console.log("result", res);
     // console.log('length', res.length);
 
-    setInterval(async () => {
-      const res = await checkReader(address, accountsAvailable[0]);
+    let interval = setInterval(async () => {
+      const res = await checkReader(address, accountsAvailable[0], username);
       if (res.length !== 0) {
+        clearInterval(interval);
         navigateToView();
       }
     }, 5000);
@@ -165,18 +167,19 @@ const Main = (props) => {
     setOpenDialogAdd(false);
     const accountsAvailable = await window.web3.eth.getAccounts();
     const address = foundDetails.scAccountAddress;
-
-    const res = await checkWriter(address, accountsAvailable[0]);
+    const username = props.auth.user.username;
+    const res = await checkWriter(address, accountsAvailable[0], username);
     if (res === true) {
       return navigateToAdd();
     }
 
-    const response = await askWritePermission(accountsAvailable[0], address);
+    const response = await askWritePermission(accountsAvailable[0], address, username);
     console.log("response", response);
 
-    setInterval(async () => {
-      const res = await checkWriter(address, accountsAvailable[0]);
+    let interval = setInterval(async () => {
+      const res = await checkWriter(address, accountsAvailable[0], username);
       if (res === true) {
+        clearInterval(interval);
         navigateToAdd();
       }
     }, 5000);

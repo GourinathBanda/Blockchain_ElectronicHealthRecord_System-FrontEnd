@@ -27,12 +27,12 @@ export const deploy = async function () {
     });
 };
 
-export const askReadPermission = async (account, address) => {
+export const askReadPermission = async (account, address, username) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     return contract.methods
-      .ReadPermission()
+      .ReadPermission(username)
       .send({ from: account })
       .then((response) => {
         console.log(response);
@@ -46,13 +46,13 @@ export const askReadPermission = async (account, address) => {
   }
 };
 
-export const askWritePermission = async (account, address) => {
+export const askWritePermission = async (account, address, username) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     let res;
     await contract.methods
-      .WritePermission()
+      .WritePermission(username)
       .send({ from: account })
       .then((response) => {
         console.log(response);
@@ -67,17 +67,17 @@ export const askWritePermission = async (account, address) => {
   }
 };
 
-export const handleReadRevoke = async (account, address) => {
+export const handleReadRevoke = async (account, address, username) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     return await contract.methods
-      .Read()
+      .Read(username)
       .call({ from: account })
       .then(async (response) => {
         console.log(response);
         return await contract.methods
-          .RevokeRead()
+          .RevokeRead(username)
           .send({ from: account })
           .then((res) => {
             console.log(res);
@@ -96,12 +96,12 @@ export const handleReadRevoke = async (account, address) => {
   }
 };
 
-export const handleWrite = async (account, address, locationHash) => {
+export const handleWrite = async (account, address, locationHash, username) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     await contract.methods
-      .Write(locationHash)
+      .Write(locationHash, username)
       .send({ from: account })
       .then((response) => {
         console.log(response);
@@ -153,12 +153,12 @@ export const grantWritePermission = async (account, address) => {
   }
 };
 
-export const checkReader = async (address, readerAddress) => {
+export const checkReader = async (address, readerAddress, username) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     return await contract.methods
-      .Read()
+      .Read(username)
       .call({ from: readerAddress })
       .then((response) => {
         console.log('checkReader response', response);
@@ -173,12 +173,12 @@ export const checkReader = async (address, readerAddress) => {
 };
 
 
-export const checkWriter = async (address, writerAddress) => {
+export const checkWriter = async (address, writerAddress, username) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     return await contract.methods
-      .CheckWritePermission()
+      .CheckWritePermission(username)
       .call({ from: writerAddress })
       .then((response) => {
         console.log(response);
@@ -197,7 +197,45 @@ export const viewLocationHash = async (account, address) => {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     return await contract.methods
-      .viewLocationHash()
+      .ViewLocationHash()
+      .call({ from: account })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const viewReader = async (account, address) => {
+  try {
+    const web3 = window.web3;
+    const contract = new web3.eth.Contract(abi, address);
+    return await contract.methods
+      .ViewReader()
+      .call({ from: account })
+      .then((response) => {
+        console.log(response);
+        return response;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+export const viewWriter = async (account, address) => {
+  try {
+    const web3 = window.web3;
+    const contract = new web3.eth.Contract(abi, address);
+    return await contract.methods
+      .ViewWriter()
       .call({ from: account })
       .then((response) => {
         console.log(response);

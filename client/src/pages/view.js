@@ -4,7 +4,12 @@ import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
 import { handleReadRevoke } from "../services/contractCalls";
 import { Button, TextField } from "@material-ui/core";
+import { connect } from "react-redux";
 var CryptoJS = require("crypto-js");
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
 
 function View(props) {
   const [photo, setPhoto] = useState("");
@@ -14,8 +19,9 @@ function View(props) {
       method: "eth_accounts",
     });
     const address = details.scAccountAddress;
+    const username = props.auth.user.username;
 
-    handleReadRevoke(accountsAvailable[0], address)
+    handleReadRevoke(accountsAvailable[0], address, username)
       .then((response) => {
         console.log("response", response);
 
@@ -75,4 +81,4 @@ function View(props) {
   );
 }
 
-export default View;
+export default connect(mapStateToProps)(View);
