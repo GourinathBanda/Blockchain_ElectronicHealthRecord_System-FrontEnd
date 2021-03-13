@@ -7,10 +7,11 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import DialogBox from "../components/Dialog";
+import { connect } from "react-redux";
+import { makeStyles } from "@material-ui/core/";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import TextField from "@material-ui/core/TextField";
-import { makeStyles } from "@material-ui/core/";
 import { handleWrite, handleRead } from "../services/contractCalls";
 import AES from "crypto-js/aes";
 import cryptico from "cryptico";
@@ -28,6 +29,10 @@ const useStyles = makeStyles((theme) => ({
     padding: "16px",
   },
 }));
+
+const mapStateToProps = (state) => ({
+  auth: state.auth,
+});
 
 function View(props) {
   const [file, setFile] = useState(""); // storing the uploaded file
@@ -124,7 +129,8 @@ function View(props) {
       method: "eth_accounts",
     });
     const address = details.scAccountAddress;
-    const response = handleWrite(accountsAvailable[0], address, encryptedHash);
+    const username = props.auth.user.username;
+    const response = handleWrite(accountsAvailable[0], address, encryptedHash, username);
     console.log("response", response);
     if (response != null) {
       setProgess(0);
@@ -198,4 +204,4 @@ function View(props) {
   );
 }
 
-export default View;
+export default connect(mapStateToProps)(View);
