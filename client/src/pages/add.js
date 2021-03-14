@@ -45,7 +45,7 @@ function Add(props) {
 
   const patientID = props.history.location.patientID;
   const patientDetails = props.history.location.data;
-
+  console.log("patientDetails", patientDetails);
   const buttonsView = [
     {
       onClick: () => setOpenDialogView(false),
@@ -69,7 +69,7 @@ function Add(props) {
     const reader = new window.FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setFile(AES.encrypt(reader.result, "aadhar number").toString());
+      setFile(AES.encrypt(reader.result, patientDetails.aadhar).toString());
     };
   };
 
@@ -94,7 +94,7 @@ function Add(props) {
           return [];
         }
         const hospitalPrivateKey = cryptico.generateRSAKey(
-          hospitalPassPhrase,
+          hospitalPassPhrase + props.auth.user.username,
           1024
         );
         const decryptedDataHash = cryptico.decrypt(

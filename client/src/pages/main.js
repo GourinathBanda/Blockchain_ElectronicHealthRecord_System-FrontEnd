@@ -217,7 +217,10 @@ const Main = (props) => {
     }
     let decryptedHash = cryptico.decrypt(
       lh,
-      cryptico.generateRSAKey(patientPassPhrase, 1024)
+      cryptico.generateRSAKey(
+        patientPassPhrase + props.auth.user.username,
+        1024
+      )
     );
     console.log("actual decrypted hash", decryptedHash);
 
@@ -246,7 +249,10 @@ const Main = (props) => {
     console.log("patientPassPhrase", patientPassPhrase);
     let decryptedHash = cryptico.decrypt(
       await viewLocationHash(accountsAvailable[0], address),
-      cryptico.generateRSAKey(patientPassPhrase, 1024)
+      cryptico.generateRSAKey(
+        patientPassPhrase + props.auth.user.username,
+        1024
+      )
     );
     console.log("actual decrypted hash", decryptedHash);
 

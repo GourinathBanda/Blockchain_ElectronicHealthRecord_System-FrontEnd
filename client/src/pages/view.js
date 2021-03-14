@@ -20,6 +20,9 @@ function View(props) {
   const [openDialogView, setOpenDialogView] = useState(true);
   const [masterFile, setMasterFile] = useState([]);
 
+  const patientID = props.history.location.patientID;
+  const patientDetails = props.history.location.data;
+
   const buttonsView = [
     {
       onClick: () => setOpenDialogView(false),
@@ -38,14 +41,14 @@ function View(props) {
     const accountsAvailable = await window.ethereum.request({
       method: "eth_accounts",
     });
-    const address = details.scAccountAddress;
+    const address = patientDetails.scAccountAddress;
     const username = props.auth.user.username;
 
     handleReadRevoke(accountsAvailable[0], address, username).then(
       (response) => {
         console.log("response", response);
         const hospitalPrivateKey = cryptico.generateRSAKey(
-          hospitalPassPhrase,
+          hospitalPassPhrase + props.auth.user.username,
           1024
         );
         const decryptedDataHash = cryptico.decrypt(
@@ -72,14 +75,12 @@ function View(props) {
     fetch(url)
       .then((res) => res.text())
       .then((res2) => {
-        var bytes = CryptoJS.AES.decrypt(res2, "aadhar number");
+        var bytes = CryptoJS.AES.decrypt(res2, patientDetails.aadhar);
         const data = bytes.toString(CryptoJS.enc.Utf8);
         setPhoto(data);
       });
   };
 
-  const patientID = props.history.location.patientID;
-  const details = props.history.location.data;
   // TODO: check for viewing permission, other navigate away
   // TODO: navigate away when patientID is not set
   const showTitle = "Viewing Patient: " + patientID;

@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
 import { deploy } from "../services/contractCalls";
-import { fetchSalt, updateCurrentUser } from "../services/apiCalls";
+import { updateCurrentUser } from "../services/apiCalls";
 import { autoLogin } from "../redux/actionCreators/auth";
 import { roles } from "../helpers/roles";
 
@@ -24,8 +24,10 @@ const mapDispatchToProps = (dispatch) => ({
 const SmartContract = (props) => {
   const [SCdeployed, setSCDeployed] = useState(false);
   const [RSAKeysGenerated, setRSAKeysGenerated] = useState(false);
+  const [aadharDone, setAadharDone] = useState(false);
   const [passPhrase, setPassPhrase] = useState("");
-  const [password, setPassword] = useState("");
+  // const [password, setPassword] = useState("");
+  const [aadhar, setAadhar] = useState("");
 
   useEffect(() => {
     console.log(props.auth.user);
@@ -56,9 +58,7 @@ const SmartContract = (props) => {
 
   const generateRSAKeys = async () => {
     if (passPhrase.length > 20) {
-      // const salt = await fetchSalt();
-      // const actualPassPhrase = passPhrase + salt + password;
-      const actualPassPhrase = passPhrase + password;
+      const actualPassPhrase = passPhrase + props.auth.user.username;
       const RSAKey = cryptico.generateRSAKey(actualPassPhrase, 1024);
       const encryptionKey = cryptico.publicKeyString(RSAKey);
       console.log("encryptionKey", encryptionKey);
@@ -67,6 +67,17 @@ const SmartContract = (props) => {
       });
       console.log(response);
       if (response) setRSAKeysGenerated(true);
+    }
+  };
+
+  const saveAadhar = async () => {
+    if (aadhar.length === 12) {
+      // const actualPassPhrase = passPhrase + salt + password;
+      const response = await updateCurrentUser({
+        aadhar: aadhar,
+      });
+      console.log(response);
+      if (response) setAadharDone(true);
     }
   };
 
@@ -123,7 +134,7 @@ const SmartContract = (props) => {
                 setPassPhrase(e.target.value);
               }}
             />
-            <TextField
+            {/* <TextField
               name="password"
               type="password"
               fullWidth
@@ -135,7 +146,7 @@ const SmartContract = (props) => {
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
-            />
+            /> */}
             <Button
               variant="contained"
               fullWidth
@@ -144,6 +155,40 @@ const SmartContract = (props) => {
               onClick={generateRSAKeys}
             >
               Gererate RSA Keys
+            </Button>
+          </>
+        )}
+        <hr />
+        {aadharDone && props.auth.user.role === roles.PATIENT && (
+          <>
+            <Typography>
+              You have successfully added your aadhar number.
+            </Typography>
+          </>
+        )}
+        {!aadharDone && props.auth.user.role === roles.PATIENT && (
+          <>
+            <TextField
+              name="aadhar"
+              fullWidth
+              label="Aadhar number"
+              variant="outlined"
+              margin="normal"
+              helperText="Your Aadhar Number will be used to encrypt your medical records."
+              required
+              value={aadhar}
+              onChange={(e) => {
+                setAadhar(e.target.value);
+              }}
+            />
+            <Button
+              variant="contained"
+              fullWidth
+              color="primary"
+              style={{ marginBottom: "8px" }}
+              onClick={saveAadhar}
+            >
+              Save Aadhar
             </Button>
           </>
         )}
