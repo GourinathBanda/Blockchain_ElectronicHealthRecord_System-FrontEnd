@@ -203,10 +203,36 @@ const Main = (props) => {
   const handleGrantWritePermission = async () => {
     setOpenDialogGrantWrite(false);
 
-    const accountsAvailable = await window.web3.eth.getAccounts();
+    const accountsAvailable = await window.ethereum.request({
+      method: "eth_accounts",
+    });
     const address = props.auth.user.scAccountAddress;
-    const response = await grantWritePermission(accountsAvailable[0], address);
-    console.log(response);
+
+    console.log("patientPassPhrase", patientPassPhrase);
+    const lh = await viewLocationHash(accountsAvailable[0], address);
+    console.log("location hash", lh);
+    if (!lh) {
+      await grantWritePermission(accountsAvailable[0], address, "");
+      return;
+    }
+    let decryptedHash = cryptico.decrypt(
+      lh,
+      cryptico.generateRSAKey(patientPassPhrase, 1024)
+    );
+    console.log("actual decrypted hash", decryptedHash);
+
+    console.log("hospitalDetails", hospitalDetails);
+    const hospitalEncryptionKey = hospitalDetails.encryptionKey;
+    const newEncryptedHash = cryptico.encrypt(
+      decryptedHash.plaintext,
+      hospitalEncryptionKey
+    );
+    console.log("newEncryptedHash", newEncryptedHash.cipher);
+    await grantWritePermission(
+      accountsAvailable[0],
+      address,
+      newEncryptedHash.cipher
+    );
   };
 
   const handleGrantReadPermission = async () => {
@@ -281,15 +307,19 @@ const Main = (props) => {
             >
               Search
             </Button>
-            <hr />
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              onClick={(e) => handleViewMyRecords(textInput)}
-            >
-              View My Records
-            </Button>
+            {props.auth.user && props.auth.user.role === roles.PATIENT && (
+              <>
+                <hr />
+                <Button
+                  variant="contained"
+                  fullWidth
+                  color="primary"
+                  onClick={(e) => handleViewMyRecords(textInput)}
+                >
+                  View My Records
+                </Button>
+              </>
+            )}
           </div>
         )}
         {patientID !== "" &&
@@ -420,7 +450,20 @@ const Main = (props) => {
           title="Write Permission"
           open={openDialogGrantWrite}
           buttons={buttonsGrantWrite}
-        />
+        >
+          <TextField
+            name="patientPassPhrase"
+            fullWidth
+            label="Your Passphrase"
+            variant="outlined"
+            margin="normal"
+            required
+            value={patientPassPhrase}
+            onChange={(e) => {
+              setPatientPassPhrase(e.target.value);
+            }}
+          />
+        </DialogBox>
       )}
       {hospitalDetails && (
         <DialogBox
