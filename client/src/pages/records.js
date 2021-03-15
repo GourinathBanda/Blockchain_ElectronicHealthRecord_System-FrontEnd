@@ -7,14 +7,15 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import DialogBox from "../components/Dialog";
+import MedicalRecordCard from "../components/MedicalRecordCard";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Input from "@material-ui/core/Input";
 import TextField from "@material-ui/core/TextField";
 import { handleWrite, handleReadRevoke } from "../services/contractCalls";
-import AES from "crypto-js/aes";
 import cryptico from "cryptico";
+import CryptoJS from "crypto-js";
 
 const ipfsClient = require("ipfs-http-client");
 const ipfs = ipfsClient({
@@ -34,18 +35,20 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 
-function Add(props) {
+function Records(props) {
+  const [photo, setPhoto] = useState("");
   const [file, setFile] = useState("");
   const [progress, setProgess] = useState(0); // progess bar
   const el = useRef(); // accesing input element
   const [uploading, setUploading] = useState(false);
   const [hospitalPassPhrase, setHospitalPassPhrase] = useState("");
   const [openDialogView, setOpenDialogView] = useState(true);
+  const [masterFile, setMasterFile] = useState([]);
   // const [snackBarOpen, setSnackBarOpen] = useState(false);
 
   const patientID = props.history.location.patientID;
   const patientDetails = props.history.location.data;
-  console.log("patientDetails", patientDetails);
+
   const buttonsView = [
     {
       onClick: () => setOpenDialogView(false),
@@ -69,7 +72,7 @@ function Add(props) {
     const reader = new window.FileReader();
     reader.readAsDataURL(file);
     reader.onloadend = () => {
-      setFile(AES.encrypt(reader.result, patientDetails.aadhar).toString());
+      setFile(CryptoJS.AES.encrypt(reader.result, "aadhar number").toString());
     };
   };
 
@@ -94,7 +97,7 @@ function Add(props) {
           return [];
         }
         const hospitalPrivateKey = cryptico.generateRSAKey(
-          hospitalPassPhrase + props.auth.user.username,
+          hospitalPassPhrase,
           1024
         );
         const decryptedDataHash = cryptico.decrypt(
@@ -109,6 +112,7 @@ function Add(props) {
           .then((res2) => {
             const JSONMasterFile = JSON.parse(res2);
             console.log("Current Masterfile", JSONMasterFile);
+            setMasterFile(JSONMasterFile);
             return JSONMasterFile;
             // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
           });
@@ -155,8 +159,20 @@ function Add(props) {
     }
   };
 
+  const getMedicalRecord = async (hash) => {
+    const url = "https://ipfs.infura.io/ipfs/" + hash;
+    fetch(url)
+      .then((res) => res.text())
+      .then((res2) => {
+        var bytes = CryptoJS.AES.decrypt(res2, "aadhar number");
+        const data = bytes.toString(CryptoJS.enc.Utf8);
+        setPhoto(data);
+      });
+  };
+
   const classes = useStyles();
-  const showTitle = "Add patient medical records - " + patientID;
+  // const showTitle = "Add patient medical records - " + patientID;
+  const showTitle = "Viewing Patient: " + patientID;
   return (
     <>
       <Appbar showTitle={showTitle} />
@@ -195,6 +211,16 @@ function Add(props) {
             </>
           </Grid>
         </Paper>
+
+        {photo && <img src={photo} alt="medical record" />}
+        {masterFile &&
+          masterFile.map((hash, index) => (
+            <MedicalRecordCard
+              name={hash}
+              key={index}
+              onClickDownload={() => getMedicalRecord(hash)}
+            />
+          ))}
       </Container>
       <DialogBox
         // onClose={handleOnDialogClose}
@@ -221,4 +247,4 @@ function Add(props) {
   );
 }
 
-export default connect(mapStateToProps)(Add);
+export default connect(mapStateToProps)(Records);

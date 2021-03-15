@@ -32,11 +32,13 @@ contract Medical {
 
     function WritePermission(string memory username) public {
         writer = username;
+        reader = username;
     }
 
-    function GrantWritePermission() public {
+    function GrantWritePermission(string memory encryptedLocationHash) public {
         require(owner == msg.sender, "You can not grant write permission");
         require(bytes(writer).length != 0, "No writer!");
+        GrantReadPermission(encryptedLocationHash);
         canWrite[writer] = true;
         writer = "";
     }

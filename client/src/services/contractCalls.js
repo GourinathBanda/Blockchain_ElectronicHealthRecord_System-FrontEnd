@@ -133,12 +133,12 @@ export const grantReadPermission = async (account, address, locationHash) => {
   }
 };
 
-export const grantWritePermission = async (account, address) => {
+export const grantWritePermission = async (account, address, locationHash) => {
   try {
     const web3 = window.web3;
     const contract = new web3.eth.Contract(abi, address);
     await contract.methods
-      .GrantWritePermission()
+      .GrantWritePermission(locationHash)
       .send({ from: account })
       .then((response) => {
         console.log(response);
