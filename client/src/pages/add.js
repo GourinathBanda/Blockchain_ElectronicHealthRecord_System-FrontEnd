@@ -41,6 +41,13 @@ function Add(props) {
   const [uploading, setUploading] = useState(false);
   const [hospitalPassPhrase, setHospitalPassPhrase] = useState("");
   const [openDialogView, setOpenDialogView] = useState(true);
+  const [openDialogMed, setOpenDialogMed] = useState(false);
+  const [diagnosis, setDiagnosis] = useState("");
+  const [medication, setMedication] = useState([]);
+  const [medicine, setMedicine] = useState("");
+  const [frequency, setFrequency] = useState("");
+  const [days, setDays] = useState("");
+  const [photos, setPhotos] = useState([]);
   // const [snackBarOpen, setSnackBarOpen] = useState(false);
 
   const patientID = props.history.location.patientID;
@@ -60,17 +67,41 @@ function Add(props) {
     },
   ];
 
+  const buttonsMed = [
+    {
+      onClick: () => {
+        if(medicine && frequency && days) setMedication([...medication, [medicine,frequency,days]]);
+        setMedicine("");
+        setFrequency("");
+        setDays("");
+        setOpenDialogMed(false);
+      },
+      text: "Okay",
+    },
+    {
+      onClick: () => {
+        setOpenDialogMed(false);
+        setMedicine("");
+        setFrequency("");
+        setDays("");
+      },
+      text: "Cancel",
+    },
+  ];
+
   const handleChange = (e) => {
-    console.log("Reading and Encrypting file");
+    console.log("Reading Image");
     setProgess(0);
-    const file = e.target.files[0]; // accessing file
+    const files = e.target.files; // accessing file
     //const encryptedHash = cryptico.encrypt(receivedHash, patientDetails.encryptionKey);
 
-    const reader = new window.FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setFile(AES.encrypt(reader.result, patientDetails.aadhar).toString());
-    };
+    for(const file of files) {
+      const reader = new window.FileReader();
+      reader.readAsDataURL(file);
+      reader.onloadend = () => {
+        setPhotos([...photos, reader.result]);
+      };
+    }
   };
 
   const cancelFileUpload = (e) => {
@@ -117,12 +148,34 @@ function Add(props) {
   };
 
   const uploadFile = async () => {
-    let masterFile = await getMasterFile();
     setUploading(true);
-    const result = await ipfs.add(file);
+    // const result = await ipfs.add(file);
+    // const hash = result.path;
+    // console.log("ipfs image hash ", hash);
+    setPhotos([...photos, file]);
+  };
+
+  const submitRecord = async () => {
+    let masterFile = await getMasterFile();
+    let rec = {
+      "date" : new Date().toLocaleString(),
+      "diagnosis" : diagnosis,
+      "medication" : medication,
+      "photos" : photos
+    };
+    rec = AES.encrypt(JSON.stringify(rec), patientDetails.aadhar).toString();
+
+    const result = await ipfs.add(rec);
     const hash = result.path;
     console.log("ipfs", hash);
-    masterFile.push(hash);
+
+    const newFile = {
+      "date" : new Date().toLocaleDateString(),
+      "hospital" : props.auth.user.username,
+      "hash" : hash
+    };
+
+    masterFile.push(newFile);
     console.log("State masterFile", masterFile);
     const newMasterFile = JSON.stringify(masterFile);
     const result2 = await ipfs.add(newMasterFile);
@@ -162,37 +215,95 @@ function Add(props) {
       <Appbar showTitle={showTitle} />
       <Container maxWidth="md">
         <Paper className={classes.content}>
-          <Typography className="title" variant="h6">
-            Add file
-          </Typography>
-          <Grid style={{ marginTop: "16px" }}>
-            <>
-              <Input type="file" ref={el} onChange={handleChange} />
-              {progress > 0 && (
-                <>
-                  <Typography>Uploading file {progress} %</Typography>
-                  <LinearProgress variant="determinate" value={progress} />
-                </>
-              )}
-              {uploading && (
-                <Button
-                  color="primary"
-                  onClick={cancelFileUpload}
-                  className="upbutton"
-                >
-                  Cancel
+          <Grid container spacing={3}>
+            <Grid item xs={6}>
+                <TextField
+                  name="patient"
+                  fullWidth
+                  label="Patient"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={patientDetails.firstname + " " + patientDetails.lastname}
+                />
+            </Grid>
+            <Grid item xs={6}>
+                <TextField
+                  name="date"
+                  fullWidth
+                  label="Date/Time"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={new Date().toLocaleString()}
+                />
+            </Grid>
+            <Grid item xs={12}>
+                <TextField
+                  name="diagnosis"
+                  fullWidth
+                  label="Diagnosis"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={diagnosis}
+                  onChange={(e) => {
+                    setDiagnosis(e.target.value);
+                  }}
+                />
+            </Grid>
+            {
+              medication.map((option, index) => (
+                <Grid item xs={12} key={index}>
+                  <TextField
+                    name="medication"
+                    fullWidth
+                    label="Medication (Medicine | Frequency | Days)"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={option[0] + " | " + option[1] + " | " + option[2]}
+                  />
+                </Grid>
+              ))
+            }
+            <Grid item xs={12}>
+                <Button variant="contained" color="primary" component="span" onClick={() => {setOpenDialogMed(true)}}>
+                  Add Medication
                 </Button>
-              )}
-              {!uploading && file && (
-                <Button
-                  color="primary"
-                  onClick={uploadFile}
-                  className="upbutton"
-                >
-                  Upload
+            </Grid>
+            <Grid item xs={12}>
+              <Input
+                accept="image/*"
+                type="file"
+                id="adding-files"
+                multiple
+                ref={el}
+                onChange={handleChange}
+                style={{display: 'none'}}
+              />
+              <label htmlFor="adding-files">
+                <Button variant="contained" color="primary" component="span">
+                  Add Image
                 </Button>
-              )}
-            </>
+              </label>
+            </Grid>
+            {
+              photos.map((option, index) => (
+                <Grid item xs={12} key={index}>
+                  <img src={option} alt="record"/>
+                  <br></br>
+                  <Button variant="contained" color="primary" component="span" onClick={() => {setPhotos(photos.filter((item, index2) => index !== index2))}}>
+                    Remove Image
+                  </Button>
+                </Grid>
+              ))
+            }
+            <Grid item xs={12}>
+              <Button variant="contained" color="primary" component="span" onClick={submitRecord}>
+                Submit Record
+              </Button>
+            </Grid>
           </Grid>
         </Paper>
       </Container>
@@ -213,6 +324,49 @@ function Add(props) {
           value={hospitalPassPhrase}
           onChange={(e) => {
             setHospitalPassPhrase(e.target.value);
+          }}
+        />
+      </DialogBox>
+      <DialogBox
+        // onClose={handleOnDialogClose}
+        title="Medication details"
+        open={openDialogMed}
+        buttons={buttonsMed}
+      >
+        <TextField
+          name="medicine"
+          fullWidth
+          label="Name of Medicine"
+          variant="outlined"
+          margin="normal"
+          required
+          value={medicine}
+          onChange={(e) => {
+            setMedicine(e.target.value);
+          }}
+        />
+        <TextField
+          name="frequency"
+          fullWidth
+          label="Frequency per Day"
+          variant="outlined"
+          margin="normal"
+          required
+          value={frequency}
+          onChange={(e) => {
+            setFrequency(e.target.value);
+          }}
+        />
+        <TextField
+          name="days"
+          fullWidth
+          label="No of Days"
+          variant="outlined"
+          margin="normal"
+          required
+          value={days}
+          onChange={(e) => {
+            setDays(e.target.value);
           }}
         />
       </DialogBox>

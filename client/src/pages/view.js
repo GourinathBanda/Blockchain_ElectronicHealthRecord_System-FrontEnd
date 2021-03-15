@@ -9,13 +9,15 @@ import { connect } from "react-redux";
 import cryptico from "cryptico";
 import DialogBox from "../components/Dialog";
 import CryptoJS from "crypto-js";
+import Grid from "@material-ui/core/Grid";
+import Paper from "@material-ui/core/Paper";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 
 function View(props) {
-  const [photo, setPhoto] = useState("");
+  const [record, setRecord] = useState("");
   const [hospitalPassPhrase, setHospitalPassPhrase] = useState("");
   const [openDialogView, setOpenDialogView] = useState(true);
   const [masterFile, setMasterFile] = useState([]);
@@ -76,8 +78,9 @@ function View(props) {
       .then((res) => res.text())
       .then((res2) => {
         var bytes = CryptoJS.AES.decrypt(res2, patientDetails.aadhar);
-        const data = bytes.toString(CryptoJS.enc.Utf8);
-        setPhoto(data);
+        const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
+        setRecord(data);
+        console.log(data);
       });
   };
 
@@ -88,19 +91,78 @@ function View(props) {
     <>
       <Appbar showTitle={showTitle} />
       <Container maxWidth="md" style={{ marginTop: "68px" }}>
-        {photo === "" ? (
-          <Button color="primary" onClick={getData} className="upbutton">
+        {record === "" ? (
+          <Button variant="contained" color="primary" component="span" onClick={getData} className="upbutton">
             View Files
           </Button>
         ) : (
-          <img src={photo} alt="medical record" />
+          <Paper style={{marginTop: "68px", padding: "16px"}}>
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
+                  <TextField
+                    name="patient"
+                    fullWidth
+                    label="Patient"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={patientDetails.firstname + " " + patientDetails.lastname}
+                  />
+              </Grid>
+              <Grid item xs={6}>
+                  <TextField
+                    name="date"
+                    fullWidth
+                    label="Date/Time"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={record.date}
+                  />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="diagnosis"
+                  fullWidth
+                  label="Diagnosis"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.diagnosis}
+                />
+              </Grid>
+              {
+                record.medication.map((option, index) => (
+                  <Grid item xs={12} key={index}>
+                    <TextField
+                      name="medication"
+                      fullWidth
+                      label="Medication (Medicine | Frequency | Days)"
+                      variant="outlined"
+                      margin="normal"
+                      disabled
+                      value={option[0] + " | " + option[1] + " | " + option[2]}
+                    />
+                  </Grid>
+                ))
+              }
+              {
+                record.photos.map((option, index) => (
+                  <Grid item xs={12} key={index}>
+                    <img src={option} alt="record"/>
+                  </Grid>
+                ))
+              }
+            </Grid>
+          </Paper>
         )}
         {masterFile &&
-          masterFile.map((hash, index) => (
+          masterFile.map((file, index) => (
             <MedicalRecordCard
-              name={hash}
+              name={file.hospital}
+              date={file.date}
               key={index}
-              onClickDownload={() => getMedicalRecord(hash)}
+              onClickDownload={() => getMedicalRecord(file.hash)}
             />
           ))}
       </Container>
