@@ -22,6 +22,8 @@ import {
   grantReadPermission,
   askWritePermission,
   checkWriter,
+  viewReader,
+  viewWriter,
 } from "../services/contractCalls";
 
 const mapStateToProps = (state) => ({
@@ -133,14 +135,28 @@ const Main = (props) => {
   };
 
   const handleGrantWrite = async () => {
-    const hospitalID = "Fatima";
+    // const hospitalID = "Fatima";
+    const accountsAvailable = await window.ethereum.request({
+      method: "eth_accounts",
+    });
+    const address = props.auth.user.scAccountAddress;
+
+    const hospitalID = await viewWriter(accountsAvailable[0], address);
+    console.log("hospitalID", hospitalID);
     const hd = await getBasicHospitalDetails(hospitalID);
     setHospitalDetails(hd);
     setOpenDialogGrantWrite(true);
   };
 
   const handleGrantView = async () => {
-    const hospitalID = "Fatima";
+    // const hospitalID = "Fatima";
+    const accountsAvailable = await window.ethereum.request({
+      method: "eth_accounts",
+    });
+    const address = props.auth.user.scAccountAddress;
+
+    const hospitalID = await viewReader(accountsAvailable[0], address);
+    console.log("hospitalID", hospitalID);
     const hd = await getBasicHospitalDetails(hospitalID);
     setHospitalDetails(hd);
     setOpenDialogGrantRead(true);
