@@ -5,6 +5,10 @@ import Container from "@material-ui/core/Container";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+import Select from "@material-ui/core/Select";
 import { connect } from "react-redux";
 import {
   getBasicUserDetails,
@@ -47,7 +51,7 @@ const Main = (props) => {
 
   const history = useHistory();
   const [patientID, setPatientID] = useState("");
-  const [textInput, setTextInput] = useState("");
+  const [typeInput, setTypeInput] = useState("username");
   const [openDialogView, setOpenDialogView] = useState(false);
   const [openDialogAdd, setOpenDialogAdd] = useState(false);
   const [openDialogGrantWrite, setOpenDialogGrantWrite] = useState(false);
@@ -55,6 +59,7 @@ const Main = (props) => {
   const [patientDetails, setPatientDetails] = useState(null);
   const [patientPassPhrase, setPatientPassPhrase] = useState("");
   const [hospitalDetails, setHospitalDetails] = useState(null);
+  const [searching, setSearching] = useState(false);
 
   const buttonsView = [
     {
@@ -102,15 +107,17 @@ const Main = (props) => {
 
   const handleNoRecord = (e) => {
     e.preventDefault();
+    setSearching(false);
     setPatientDetails(null);
-    setPatientID("");
   };
 
-  const handleViewMyRecords = () => {};
+  const handleViewMyRecords = async () => {
+    // goto view?
+  };
 
-  const handleSearchUser = async (id) => {
-    setPatientID(textInput);
-    const details = await getBasicUserDetails(textInput);
+  const handleSearchUser = async () => {
+    setSearching(true);
+    const details = await getBasicUserDetails(patientID, typeInput);
     if (details !== undefined) {
       setPatientDetails(details);
     }
@@ -307,19 +314,35 @@ const Main = (props) => {
     <>
       <Appbar />
       <Container maxWidth="xs" style={{ marginTop: "200px" }}>
-        {patientID === "" && (
+        {searching === false && (
           <div className="findPatient">
-            <Typography margin="normal" style={{ marginTop: "8px" }}>
-              Please enter patient's username
+            <Typography
+              margin="normal"
+              style={{ marginTop: "8px", marginBottom: "24px" }}
+            >
+              Please select a search method and enter respective ID
             </Typography>
+            <FormControl variant="outlined" fullWidth>
+              <InputLabel id="username-aadhar-method">Method</InputLabel>
+              <Select
+                labelId="username-aadhar-method"
+                value={typeInput}
+                onChange={(e) => setTypeInput(e.target.value)}
+                label="Method"
+              >
+                <MenuItem value={"username"}>Username</MenuItem>
+                <MenuItem value={"aadhar"}>Aadhar Number</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               id="patientID"
               fullWidth
-              label="Patient ID"
+              label={typeInput}
               variant="outlined"
               margin="normal"
               required
-              onChange={(e) => setTextInput(e.target.value)}
+              value={patientID}
+              onChange={(e) => setPatientID(e.target.value)}
             />
             <Button
               variant="contained"
@@ -336,7 +359,7 @@ const Main = (props) => {
                   variant="contained"
                   fullWidth
                   color="primary"
-                  onClick={(e) => handleViewMyRecords(textInput)}
+                  onClick={(e) => handleViewMyRecords()}
                 >
                   View My Records
                 </Button>
@@ -344,13 +367,13 @@ const Main = (props) => {
             )}
           </div>
         )}
-        {patientID !== "" &&
+        {searching === true &&
           patientDetails &&
           patientDetails.scAccountAddress !== "" && (
             <div className="ViewAdd">
               <Typography>
                 Patient Record Exists
-                <br /> Username: {patientID}
+                <br /> {typeInput}: {patientID}
               </Typography>
               <Typography>
                 {patientDetails.firstname + " " + patientDetails.lastname}
@@ -390,7 +413,7 @@ const Main = (props) => {
               </Button>
             </div>
           )}
-        {((!patientDetails && patientID !== "") ||
+        {((!patientDetails && searching === true) ||
           (patientDetails && patientDetails.scAccountAddress === "")) && (
           <div>
             <Typography>No record exists for patient ID:{patientID}</Typography>
