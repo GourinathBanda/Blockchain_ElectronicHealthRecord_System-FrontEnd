@@ -41,10 +41,10 @@ export const updateCurrentUser = (user) => {
   );
 };
 
-export const getBasicUserDetails = (id) => {
+export const getBasicUserDetails = (id, method) => {
   return axios({
     method: "get",
-    url: apiURL + "/api/users/basicdetails/" + id,
+    url: apiURL + "/api/users/basicdetails/" + method + "/" + id,
     headers: authHeader(),
   })
     .then((response) => {
