@@ -112,7 +112,7 @@ const Main = (props) => {
   };
 
   const handleViewMyRecords = async () => {
-    // goto view?
+    navigateToView();
   };
 
   const handleSearchUser = async () => {
