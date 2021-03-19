@@ -45,7 +45,7 @@ function View(props) {
       method: "eth_accounts",
     });
 
-    console.log(props.auth.user);
+    //console.log(props.auth.user);
 
     if(props.auth.user.role === roles.PATIENT) {
       const address = props.auth.user.scAccountAddress;
@@ -91,7 +91,7 @@ function View(props) {
     fetch(url)
       .then((res) => res.text())
       .then((res2) => {
-        var bytes = CryptoJS.AES.decrypt(res2, props.auth.user.aadhar);
+        var bytes = CryptoJS.AES.decrypt(res2, props.auth.user.role === roles.PATIENT ? props.auth.user.aadhar : patientDetails.aadhar);
         const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
         setRecord(data);
         console.log(data);
