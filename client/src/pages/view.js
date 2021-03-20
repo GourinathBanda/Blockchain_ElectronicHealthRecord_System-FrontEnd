@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Appbar from "../components/Appbar";
 import Container from "@material-ui/core/Container";
 import MedicalRecordCard from "../components/MedicalRecordCard";
-import { handleReadRevoke } from "../services/contractCalls";
+import { handleReadRevoke, viewLocationHash } from "../services/contractCalls";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
@@ -11,6 +11,7 @@ import DialogBox from "../components/Dialog";
 import CryptoJS from "crypto-js";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
+import { roles } from "../helpers/roles";
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -43,33 +44,46 @@ function View(props) {
     const accountsAvailable = await window.ethereum.request({
       method: "eth_accounts",
     });
-    const address = patientDetails.scAccountAddress;
-    const username = props.auth.user.username;
 
-    handleReadRevoke(accountsAvailable[0], address, username).then(
-      (response) => {
-        console.log("response", response);
-        const hospitalPrivateKey = cryptico.generateRSAKey(
-          hospitalPassPhrase + props.auth.user.username,
-          1024
-        );
-        const decryptedDataHash = cryptico.decrypt(
-          response,
-          hospitalPrivateKey
-        );
-        console.log("decrypted hash", decryptedDataHash.plaintext);
-        const url =
-          "https://ipfs.infura.io/ipfs/" + decryptedDataHash.plaintext;
-        fetch(url)
-          .then((res) => res.text())
-          .then((res2) => {
-            const JSONMasterFile = JSON.parse(res2);
-            setMasterFile(JSONMasterFile);
-            console.log("Masterfile", JSONMasterFile);
-            // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
-          });
-      }
+    //console.log(props.auth.user);
+
+    if(props.auth.user.role === roles.PATIENT) {
+      const address = props.auth.user.scAccountAddress;
+      viewLocationHash(accountsAvailable[0], address).then(
+        (response) => handleResponse(response)
+      )
+    }
+    else {
+      const username = props.auth.user.username;
+      const address = patientDetails.scAccountAddress;
+      handleReadRevoke(accountsAvailable[0], address, username).then(
+        (response) => handleResponse(response)
+      );
+    }
+  };
+
+  const handleResponse = (response) => {
+    console.log("response", response);
+    console.log()
+    const hospitalPrivateKey = cryptico.generateRSAKey(
+      hospitalPassPhrase + props.auth.user.username,
+      1024
     );
+    const decryptedDataHash = cryptico.decrypt(
+      response,
+      hospitalPrivateKey
+    );
+    console.log("decrypted hash", decryptedDataHash.plaintext);
+    const url =
+      "https://ipfs.infura.io/ipfs/" + decryptedDataHash.plaintext;
+    fetch(url)
+      .then((res) => res.text())
+      .then((res2) => {
+        const JSONMasterFile = JSON.parse(res2);
+        setMasterFile(JSONMasterFile);
+        console.log("Masterfile", JSONMasterFile);
+        // console.log(JSONFile.toString(CryptoJS.enc.Utf8)
+      });
   };
 
   const getMedicalRecord = async (hash) => {
@@ -77,7 +91,7 @@ function View(props) {
     fetch(url)
       .then((res) => res.text())
       .then((res2) => {
-        var bytes = CryptoJS.AES.decrypt(res2, patientDetails.aadhar);
+        var bytes = CryptoJS.AES.decrypt(res2, props.auth.user.role === roles.PATIENT ? props.auth.user.aadhar : patientDetails.aadhar);
         const data = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
         setRecord(data);
         console.log(data);
@@ -106,7 +120,7 @@ function View(props) {
                     variant="outlined"
                     margin="normal"
                     disabled
-                    value={patientDetails.firstname + " " + patientDetails.lastname}
+                    value={props.auth.user.role === roles.PATIENT ? props.auth.user.username : patientDetails.firstname + " " + patientDetails.lastname}
                   />
               </Grid>
               <Grid item xs={6}>

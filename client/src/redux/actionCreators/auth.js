@@ -19,6 +19,7 @@ export const autoLogin = () => (dispatch) => {
             username: response.data.username,
             role: response.data.role,
             scAccountAddress: response.data.scAccountAddress,
+            aadhar: response.data.aadhar
           })
         );
       }
@@ -42,9 +43,10 @@ export const login = (username, password) => (dispatch) => {
         localStorage.setItem("ud", JSON.stringify(response.data));
         return dispatch(
           loginSuccess({
-            username: username,
+            username: response.data.username,
             role: response.data.role,
             scAccountAddress: response.data.scAccountAddress,
+            aadhar: response.data.aadhar
           })
         );
       } else {
