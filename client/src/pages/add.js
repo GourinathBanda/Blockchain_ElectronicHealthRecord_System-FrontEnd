@@ -42,11 +42,21 @@ function Add(props) {
   const [hospitalPassPhrase, setHospitalPassPhrase] = useState("");
   const [openDialogView, setOpenDialogView] = useState(true);
   const [openDialogMed, setOpenDialogMed] = useState(false);
+  const [openDialogTest, setOpenDialogTest] = useState(false);
   const [diagnosis, setDiagnosis] = useState("");
   const [medication, setMedication] = useState([]);
+  const [test, setTest] = useState("");
+  const [tests, setTests] = useState([]);
   const [medicine, setMedicine] = useState("");
   const [frequency, setFrequency] = useState("");
   const [days, setDays] = useState("");
+  const [weight, setWeight] = useState(null);
+  const [temp, setTemp] = useState(null);
+  const [heart, setHeart] = useState(null);
+  const [age, setAge] = useState(null);
+  const [sex, setSex] = useState(null);
+  const [bp, setBP] = useState(null);
+  const [symptoms, setSymptoms] = useState("");
   const [photos, setPhotos] = useState([]);
   // const [snackBarOpen, setSnackBarOpen] = useState(false);
 
@@ -84,6 +94,22 @@ function Add(props) {
         setMedicine("");
         setFrequency("");
         setDays("");
+      },
+      text: "Cancel",
+    },
+  ];
+
+  const buttonsTest = [
+    {
+      onClick: () => {
+        setTests([...tests, test])
+        setOpenDialogTest(false);
+      },
+      text: "Okay",
+    },
+    {
+      onClick: () => {
+        setOpenDialogTest(false);
       },
       text: "Cancel",
     },
@@ -159,9 +185,17 @@ function Add(props) {
     let masterFile = await getMasterFile();
     let rec = {
       "date" : new Date().toLocaleString(),
+      "symptoms" : symptoms,
       "diagnosis" : diagnosis,
       "medication" : medication,
-      "photos" : photos
+      "photos" : photos,
+      "tests" : tests,
+      "weight" : weight,
+      "temp" : temp,
+      "heart" : heart,
+      "bp" : bp,
+      "age" : age,
+      "sex" : sex
     };
     rec = AES.encrypt(JSON.stringify(rec), patientDetails.aadhar).toString();
 
@@ -238,6 +272,104 @@ function Add(props) {
                   value={new Date().toLocaleString()}
                 />
             </Grid>
+            <Grid item xs={6}>
+                <TextField
+                  name="age"
+                  fullWidth
+                  label="Age"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={age}
+                  onChange={(e) => {
+                    setAge(e.target.value);
+                  }}
+                />
+            </Grid>
+            <Grid item xs={6}>
+                <TextField
+                  name="sex"
+                  fullWidth
+                  label="Sex"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={sex}
+                  onChange={(e) => {
+                    setSex(e.target.value);
+                  }}
+                />
+            </Grid>
+            <Grid item xs={6}>
+                <TextField
+                  name="weight"
+                  fullWidth
+                  label="Weight"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={weight}
+                  onChange={(e) => {
+                    setWeight(e.target.value);
+                  }}
+                />
+            </Grid>
+            <Grid item xs={6}>
+                <TextField
+                  name="temperature"
+                  fullWidth
+                  label="Temperature"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={temp}
+                  onChange={(e) => {
+                    setTemp(e.target.value);
+                  }}
+                />
+            </Grid>
+            <Grid item xs={6}>
+                <TextField
+                  name="heartrate"
+                  fullWidth
+                  label="Heart Rate"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={heart}
+                  onChange={(e) => {
+                    setHeart(e.target.value);
+                  }}
+                />
+            </Grid>
+            <Grid item xs={6}>
+                <TextField
+                  name="bp"
+                  fullWidth
+                  label="Blood Pressure"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={bp}
+                  onChange={(e) => {
+                    setBP(e.target.value);
+                  }}
+                />
+            </Grid>
+            <Grid item xs={12}>
+                <TextField
+                  name="symptoms"
+                  fullWidth
+                  label="Symptoms"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={symptoms}
+                  onChange={(e) => {
+                    setSymptoms(e.target.value);
+                  }}
+                />
+            </Grid>
             <Grid item xs={12}>
                 <TextField
                   name="diagnosis"
@@ -253,12 +385,32 @@ function Add(props) {
                 />
             </Grid>
             {
+              tests.map((option, index) => (
+                <Grid item xs={12} key={index}>
+                  <TextField
+                    name="test"
+                    fullWidth
+                    label={"Test "+ index}
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={option}
+                  />
+                </Grid>
+              ))
+            }
+            <Grid item xs={12}>
+                <Button variant="contained" color="primary" component="span" onClick={() => {setOpenDialogTest(true)}}>
+                  Add Test
+                </Button>
+            </Grid>
+            {
               medication.map((option, index) => (
                 <Grid item xs={12} key={index}>
                   <TextField
                     name="medication"
                     fullWidth
-                    label="Medication (Medicine | Frequency | Days)"
+                    label={"Medication " + index + " (Medicine | Frequency | Days)"}
                     variant="outlined"
                     margin="normal"
                     disabled
@@ -274,7 +426,7 @@ function Add(props) {
             </Grid>
             <Grid item xs={12}>
               <Input
-                accept="image/*"
+                accept="image/*,.pdf,.docx"
                 type="file"
                 id="adding-files"
                 multiple
@@ -284,17 +436,17 @@ function Add(props) {
               />
               <label htmlFor="adding-files">
                 <Button variant="contained" color="primary" component="span">
-                  Add Image
+                  Add Files (Image/Doc/PDF)
                 </Button>
               </label>
             </Grid>
             {
               photos.map((option, index) => (
                 <Grid item xs={12} key={index}>
-                  <img src={option} alt="record"/>
+                  <embed src={option}  height="100%" width="100%" />
                   <br></br>
                   <Button variant="contained" color="primary" component="span" onClick={() => {setPhotos(photos.filter((item, index2) => index !== index2))}}>
-                    Remove Image
+                    Remove
                   </Button>
                 </Grid>
               ))
@@ -324,6 +476,26 @@ function Add(props) {
           value={hospitalPassPhrase}
           onChange={(e) => {
             setHospitalPassPhrase(e.target.value);
+          }}
+        />
+      </DialogBox>
+      <DialogBox
+        // onClose={handleOnDialogClose}
+        text="Enter Test details"
+        title="Test"
+        open={openDialogTest}
+        buttons={buttonsTest}
+      >
+        <TextField
+          name="test"
+          fullWidth
+          label="Test"
+          variant="outlined"
+          margin="normal"
+          required
+          value={test}
+          onChange={(e) => {
+            setTest(e.target.value);
           }}
         />
       </DialogBox>

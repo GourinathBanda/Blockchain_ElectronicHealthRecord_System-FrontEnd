@@ -134,6 +134,83 @@ function View(props) {
                     value={record.date}
                   />
               </Grid>
+              <Grid item xs={6}>
+                  <TextField
+                    name="age"
+                    fullWidth
+                    label="Age"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={record.age}
+                  />
+              </Grid>
+              <Grid item xs={6}>
+                  <TextField
+                    name="sex"
+                    fullWidth
+                    label="Sex"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={record.sex}
+                  />
+              </Grid>
+              <Grid item xs={6}>
+                  <TextField
+                    name="weight"
+                    fullWidth
+                    label="Weight"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={record.weight}
+                  />
+              </Grid>
+              <Grid item xs={6}>
+                  <TextField
+                    name="temperature"
+                    fullWidth
+                    label="Temperature"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={record.temp}
+                  />
+              </Grid>
+              <Grid item xs={6}>
+                  <TextField
+                    name="heartrate"
+                    fullWidth
+                    label="Heart Rate"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={record.heart}
+                  />
+              </Grid>
+              <Grid item xs={6}>
+                  <TextField
+                    name="bp"
+                    fullWidth
+                    label="BP"
+                    variant="outlined"
+                    margin="normal"
+                    disabled
+                    value={record.bp}
+                  />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  name="symptoms"
+                  fullWidth
+                  label="Symptoms"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.symptoms}
+                />
+              </Grid>
               <Grid item xs={12}>
                 <TextField
                   name="diagnosis"
@@ -146,12 +223,27 @@ function View(props) {
                 />
               </Grid>
               {
+                record.tests.map((option, index) => (
+                  <Grid item xs={12} key={index}>
+                    <TextField
+                      name="test"
+                      fullWidth
+                      label={"Test " + index}
+                      variant="outlined"
+                      margin="normal"
+                      disabled
+                      value={option}
+                    />
+                  </Grid>
+                ))
+              }
+              {
                 record.medication.map((option, index) => (
                   <Grid item xs={12} key={index}>
                     <TextField
                       name="medication"
                       fullWidth
-                      label="Medication (Medicine | Frequency | Days)"
+                      label={"Medication " + index + " (Medicine | Frequency | Days)"}
                       variant="outlined"
                       margin="normal"
                       disabled
@@ -163,7 +255,7 @@ function View(props) {
               {
                 record.photos.map((option, index) => (
                   <Grid item xs={12} key={index}>
-                    <img src={option} alt="record"/>
+                    <embed src={option} height={option[5]==="i" ? "100%" : "700"} width="100%" />
                   </Grid>
                 ))
               }
