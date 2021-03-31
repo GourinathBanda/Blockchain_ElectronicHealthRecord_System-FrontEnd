@@ -49,6 +49,7 @@ function View(props) {
 
     if (props.auth.user.role === roles.PATIENT) {
       const address = props.auth.user.scAccountAddress;
+      // console.log(props.auth.user);
       viewLocationHash(accountsAvailable[0], address).then(
         (response) => handleResponse(response)
       )

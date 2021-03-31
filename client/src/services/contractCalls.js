@@ -193,7 +193,9 @@ export const checkWriter = async (address, writerAddress, username) => {
 export const viewLocationHash = async (account, address) => {
   try {
     const web3 = window.web3;
+
     const contract = new web3.eth.Contract(abi, address);
+    // console.log('here', contract);
     return await contract.methods
       .ViewLocationHash()
       .call({ from: account })

@@ -39,11 +39,17 @@ const SmartContract = (props) => {
         // console.log('here', user.encryptionKey);
         setRSAKeysGenerated(true);
       }
+      if (user && user.aadhar) {
+        setAadharDone(true);
+      }
+      if (user && user.scAccountAddress) {
+        setSCDeployed(true);
+      }
     }
-
-    if (props.auth.user && props.auth.user.scAccountAddress) {
-      setSCDeployed(true);
-    }
+    // console.log(props.auth.user);
+    // if (props.auth.user && props.auth.user.scAccountAddress) {
+    //   setSCDeployed(true);
+    // }
     getUserDetails();
     // const user = getUserDetails();
 
