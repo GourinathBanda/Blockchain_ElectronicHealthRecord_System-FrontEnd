@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
 import MenuItem from "@material-ui/core/MenuItem";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Snackbar from "@material-ui/core/Snackbar";
@@ -38,6 +39,8 @@ export class Register extends Component {
         email: "",
         password: "",
         role: "",
+        aadhar: "",
+        phoneNo: "",
       },
       userError: "",
       passError: "",
@@ -110,6 +113,14 @@ export class Register extends Component {
       email: name + "@" + name + ".com",
       password: name,
       role: roles.HOSPITAL,
+      phoneNo: faker.random.number({
+        'min': 1000000000,
+        'max': 9000000000
+      }),
+      aadhar: faker.random.number({
+        'min': 100000000000,
+        'max': 900000000000
+      }),
     };
 
     this.setState({
@@ -136,6 +147,9 @@ export class Register extends Component {
 
             {errMess}
 
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+              
             <TextField
               name="username"
               fullWidth
@@ -185,6 +199,53 @@ export class Register extends Component {
                 this.handleChange(e);
               }}
             />
+
+              </Grid>
+              <Grid item xs={6}>
+
+              <TextField
+                  name="phoneNo"
+                  fullWidth
+                  label="Phone No."
+                  variant="outlined"
+                  margin="normal"
+                  type="number"
+                  value={this.state.user.phoneNo}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                />
+           <TextField
+                  name="aadhar"
+                  fullWidth
+                  label="Aadhar"
+                  variant="outlined"
+                  margin="normal"
+                  type="number"
+                  value={this.state.user.aadhar}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                />
+            <TextField
+              name="role"
+              fullWidth
+              label="Select"
+              variant="outlined"
+              margin="normal"
+              required
+              select
+              value={this.state.user.role}
+              onChange={(e) => {
+                this.handleChange(e);
+              }}
+            >
+              {availableRoles.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
             <TextField
               name="password"
               fullWidth
@@ -198,38 +259,9 @@ export class Register extends Component {
                 this.handleChange(e);
               }}
             />
-            {/* <TextField
-            name="role"
-            fullWidth
-            variant="outlined"
-            margin="normal"
-            required
-            type="checkbox"
-            checked={this.state.user.role}
-            onChange={(e) => {
-              this.handleChange(e);
-            }}
-          /> */}
-            <TextField
-              name="role"
-              fullWidth
-              label="Select"
-              variant="outlined"
-              margin="normal"
-              required
-              select
-              value={this.state.user.role}
-              onChange={(e) => {
-                this.handleChange(e);
-              }}
-              helperText="Please select your role"
-            >
-              {availableRoles.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              </Grid>
+            </Grid>
+            
             <Button
               variant={registering ? "outlined" : "contained"}
               fullWidth
