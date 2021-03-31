@@ -160,6 +160,7 @@ const Main = (props) => {
     const accountsAvailable = await window.ethereum.request({
       method: "eth_accounts",
     });
+    console.log(props.auth.user);
     const address = props.auth.user.scAccountAddress;
 
     const hospitalID = await viewReader(accountsAvailable[0], address);
@@ -175,6 +176,7 @@ const Main = (props) => {
     const address = patientDetails.scAccountAddress;
     const username = props.auth.user.username;
     console.log(patientDetails);
+
     const res = await checkReader(address, accountsAvailable[0], username);
     if (res.length !== 0) {
       return navigateToView();
@@ -270,8 +272,13 @@ const Main = (props) => {
     const address = props.auth.user.scAccountAddress;
 
     console.log("patientPassPhrase", patientPassPhrase);
+    const locationHash = await viewLocationHash(accountsAvailable[0], address);
+    if (!locationHash) {
+      return;
+    }
+
     let decryptedHash = cryptico.decrypt(
-      await viewLocationHash(accountsAvailable[0], address),
+      locationHash,
       cryptico.generateRSAKey(
         patientPassPhrase + props.auth.user.username,
         1024
@@ -415,19 +422,19 @@ const Main = (props) => {
           )}
         {((!patientDetails && searching === true) ||
           (patientDetails && patientDetails.scAccountAddress === "")) && (
-          <div>
-            <Typography>No record exists for patient ID:{patientID}</Typography>
-            <Button
-              variant="contained"
-              fullWidth
-              color="primary"
-              style={{ marginBottom: "8px" }}
-              onClick={handleNoRecord}
-            >
-              Okay
+            <div>
+              <Typography>No record exists for patient ID:{patientID}</Typography>
+              <Button
+                variant="contained"
+                fullWidth
+                color="primary"
+                style={{ marginBottom: "8px" }}
+                onClick={handleNoRecord}
+              >
+                Okay
             </Button>
-          </div>
-        )}
+            </div>
+          )}
         {props.auth.user && props.auth.user.role === roles.PATIENT && (
           <Button
             variant="contained"

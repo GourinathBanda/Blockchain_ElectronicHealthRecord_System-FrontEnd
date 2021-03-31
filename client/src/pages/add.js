@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import Appbar from "../components/Appbar";
+import { useHistory } from "react-router-dom";
 // import SnackBar from "../components/SnackBar";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
@@ -35,6 +36,7 @@ const mapStateToProps = (state) => ({
 });
 
 function Add(props) {
+  const history = useHistory();
   const [file, setFile] = useState("");
   const [progress, setProgess] = useState(0); // progess bar
   const el = useRef(); // accesing input element
@@ -59,10 +61,10 @@ function Add(props) {
   const [symptoms, setSymptoms] = useState("");
   const [photos, setPhotos] = useState([]);
   // const [snackBarOpen, setSnackBarOpen] = useState(false);
-
+  // console.log('here',props.history.location);
   const patientID = props.history.location.patientID;
   const patientDetails = props.history.location.data;
-  console.log("patientDetails", patientDetails);
+  // console.log("patientDetails", patientDetails);
   const buttonsView = [
     {
       onClick: () => setOpenDialogView(false),
@@ -80,7 +82,7 @@ function Add(props) {
   const buttonsMed = [
     {
       onClick: () => {
-        if(medicine && frequency && days) setMedication([...medication, [medicine,frequency,days]]);
+        if (medicine && frequency && days) setMedication([...medication, [medicine, frequency, days]]);
         setMedicine("");
         setFrequency("");
         setDays("");
@@ -121,7 +123,7 @@ function Add(props) {
     const files = e.target.files; // accessing file
     //const encryptedHash = cryptico.encrypt(receivedHash, patientDetails.encryptionKey);
 
-    for(const file of files) {
+    for (const file of files) {
       const reader = new window.FileReader();
       reader.readAsDataURL(file);
       reader.onloadend = () => {
@@ -184,18 +186,18 @@ function Add(props) {
   const submitRecord = async () => {
     let masterFile = await getMasterFile();
     let rec = {
-      "date" : new Date().toLocaleString(),
-      "symptoms" : symptoms,
-      "diagnosis" : diagnosis,
-      "medication" : medication,
-      "photos" : photos,
-      "tests" : tests,
-      "weight" : weight,
-      "temp" : temp,
-      "heart" : heart,
-      "bp" : bp,
-      "age" : age,
-      "sex" : sex
+      "date": new Date().toLocaleString(),
+      "symptoms": symptoms,
+      "diagnosis": diagnosis,
+      "medication": medication,
+      "photos": photos,
+      "tests": tests,
+      "weight": weight,
+      "temp": temp,
+      "heart": heart,
+      "bp": bp,
+      "age": age,
+      "sex": sex
     };
     rec = AES.encrypt(JSON.stringify(rec), patientDetails.aadhar).toString();
 
@@ -204,9 +206,9 @@ function Add(props) {
     console.log("ipfs", hash);
 
     const newFile = {
-      "date" : new Date().toLocaleDateString(),
-      "hospital" : props.auth.user.username,
-      "hash" : hash
+      "date": new Date().toLocaleDateString(),
+      "hospital": props.auth.user.username,
+      "hash": hash
     };
 
     masterFile.push(newFile);
@@ -239,18 +241,22 @@ function Add(props) {
     if (response != null) {
       setProgess(0);
       setUploading(false);
+      history.push({
+        pathname: '/'
+      });
     }
   };
 
   const classes = useStyles();
   const showTitle = "Add patient medical records - " + patientID;
-  return (
-    <>
-      <Appbar showTitle={showTitle} />
-      <Container maxWidth="md">
-        <Paper className={classes.content}>
-          <Grid container spacing={3}>
-            <Grid item xs={6}>
+  if (patientDetails && patientID) {
+    return (
+      <>
+        <Appbar showTitle={showTitle} />
+        <Container maxWidth="md">
+          <Paper className={classes.content}>
+            <Grid container spacing={3}>
+              <Grid item xs={6}>
                 <TextField
                   name="patient"
                   fullWidth
@@ -260,8 +266,8 @@ function Add(props) {
                   disabled
                   value={patientDetails.firstname + " " + patientDetails.lastname}
                 />
-            </Grid>
-            <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   name="date"
                   fullWidth
@@ -271,8 +277,8 @@ function Add(props) {
                   disabled
                   value={new Date().toLocaleString()}
                 />
-            </Grid>
-            <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   name="age"
                   fullWidth
@@ -285,8 +291,8 @@ function Add(props) {
                     setAge(e.target.value);
                   }}
                 />
-            </Grid>
-            <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   name="sex"
                   fullWidth
@@ -299,8 +305,8 @@ function Add(props) {
                     setSex(e.target.value);
                   }}
                 />
-            </Grid>
-            <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   name="weight"
                   fullWidth
@@ -313,8 +319,8 @@ function Add(props) {
                     setWeight(e.target.value);
                   }}
                 />
-            </Grid>
-            <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   name="temperature"
                   fullWidth
@@ -327,8 +333,8 @@ function Add(props) {
                     setTemp(e.target.value);
                   }}
                 />
-            </Grid>
-            <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   name="heartrate"
                   fullWidth
@@ -341,8 +347,8 @@ function Add(props) {
                     setHeart(e.target.value);
                   }}
                 />
-            </Grid>
-            <Grid item xs={6}>
+              </Grid>
+              <Grid item xs={6}>
                 <TextField
                   name="bp"
                   fullWidth
@@ -355,8 +361,8 @@ function Add(props) {
                     setBP(e.target.value);
                   }}
                 />
-            </Grid>
-            <Grid item xs={12}>
+              </Grid>
+              <Grid item xs={12}>
                 <TextField
                   name="symptoms"
                   fullWidth
@@ -369,8 +375,8 @@ function Add(props) {
                     setSymptoms(e.target.value);
                   }}
                 />
-            </Grid>
-            <Grid item xs={12}>
+              </Grid>
+              <Grid item xs={12}>
                 <TextField
                   name="diagnosis"
                   fullWidth
@@ -383,168 +389,169 @@ function Add(props) {
                     setDiagnosis(e.target.value);
                   }}
                 />
-            </Grid>
-            {
-              tests.map((option, index) => (
-                <Grid item xs={12} key={index}>
-                  <TextField
-                    name="test"
-                    fullWidth
-                    label={"Test "+ index}
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={option}
-                  />
-                </Grid>
-              ))
-            }
-            <Grid item xs={12}>
-                <Button variant="contained" color="primary" component="span" onClick={() => {setOpenDialogTest(true)}}>
+              </Grid>
+              {
+                tests.map((option, index) => (
+                  <Grid item xs={12} key={index}>
+                    <TextField
+                      name="test"
+                      fullWidth
+                      label={"Test " + index}
+                      variant="outlined"
+                      margin="normal"
+                      disabled
+                      value={option}
+                    />
+                  </Grid>
+                ))
+              }
+              <Grid item xs={12}>
+                <Button variant="contained" color="primary" component="span" onClick={() => { setOpenDialogTest(true) }}>
                   Add Test
-                </Button>
-            </Grid>
-            {
-              medication.map((option, index) => (
-                <Grid item xs={12} key={index}>
-                  <TextField
-                    name="medication"
-                    fullWidth
-                    label={"Medication " + index + " (Medicine | Frequency | Days)"}
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={option[0] + " | " + option[1] + " | " + option[2]}
-                  />
-                </Grid>
-              ))
-            }
-            <Grid item xs={12}>
-                <Button variant="contained" color="primary" component="span" onClick={() => {setOpenDialogMed(true)}}>
-                  Add Medication
-                </Button>
-            </Grid>
-            <Grid item xs={12}>
-              <Input
-                accept="image/*,.pdf,.docx"
-                type="file"
-                id="adding-files"
-                multiple
-                ref={el}
-                onChange={handleChange}
-                style={{display: 'none'}}
-              />
-              <label htmlFor="adding-files">
-                <Button variant="contained" color="primary" component="span">
-                  Add Files (Image/Doc/PDF)
-                </Button>
-              </label>
-            </Grid>
-            {
-              photos.map((option, index) => (
-                <Grid item xs={12} key={index}>
-                  <embed src={option}  height="100%" width="100%" />
-                  <br></br>
-                  <Button variant="contained" color="primary" component="span" onClick={() => {setPhotos(photos.filter((item, index2) => index !== index2))}}>
-                    Remove
                   </Button>
-                </Grid>
-              ))
-            }
-            <Grid item xs={12}>
-              <Button variant="contained" color="primary" component="span" onClick={submitRecord}>
-                Submit Record
-              </Button>
+              </Grid>
+              {
+                medication.map((option, index) => (
+                  <Grid item xs={12} key={index}>
+                    <TextField
+                      name="medication"
+                      fullWidth
+                      label={"Medication " + index + " (Medicine | Frequency | Days)"}
+                      variant="outlined"
+                      margin="normal"
+                      disabled
+                      value={option[0] + " | " + option[1] + " | " + option[2]}
+                    />
+                  </Grid>
+                ))
+              }
+              <Grid item xs={12}>
+                <Button variant="contained" color="primary" component="span" onClick={() => { setOpenDialogMed(true) }}>
+                  Add Medication
+                  </Button>
+              </Grid>
+              <Grid item xs={12}>
+                <Input
+                  accept="image/*,.pdf,.docx"
+                  type="file"
+                  id="adding-files"
+                  multiple
+                  ref={el}
+                  onChange={handleChange}
+                  style={{ display: 'none' }}
+                />
+                <label htmlFor="adding-files">
+                  <Button variant="contained" color="primary" component="span">
+                    Add Files (Image/Doc/PDF)
+                  </Button>
+                </label>
+              </Grid>
+              {
+                photos.map((option, index) => (
+                  <Grid item xs={12} key={index}>
+                    <embed src={option} height="100%" width="100%" />
+                    <br></br>
+                    <Button variant="contained" color="primary" component="span" onClick={() => { setPhotos(photos.filter((item, index2) => index !== index2)) }}>
+                      Remove
+                    </Button>
+                  </Grid>
+                ))
+              }
+              <Grid item xs={12}>
+                <Button variant="contained" color="primary" component="span" onClick={submitRecord}>
+                  Submit Record
+                </Button>
+              </Grid>
             </Grid>
-          </Grid>
-        </Paper>
-      </Container>
-      <DialogBox
-        // onClose={handleOnDialogClose}
-        text="Please enter your passphrase"
-        title="Decrypt Data"
-        open={openDialogView}
-        buttons={buttonsView}
-      >
-        <TextField
-          name="hospitalPassPhrase"
-          fullWidth
-          label="Passphrase"
-          variant="outlined"
-          margin="normal"
-          required
-          value={hospitalPassPhrase}
-          onChange={(e) => {
-            setHospitalPassPhrase(e.target.value);
-          }}
-        />
-      </DialogBox>
-      <DialogBox
-        // onClose={handleOnDialogClose}
-        text="Enter Test details"
-        title="Test"
-        open={openDialogTest}
-        buttons={buttonsTest}
-      >
-        <TextField
-          name="test"
-          fullWidth
-          label="Test"
-          variant="outlined"
-          margin="normal"
-          required
-          value={test}
-          onChange={(e) => {
-            setTest(e.target.value);
-          }}
-        />
-      </DialogBox>
-      <DialogBox
-        // onClose={handleOnDialogClose}
-        title="Medication details"
-        open={openDialogMed}
-        buttons={buttonsMed}
-      >
-        <TextField
-          name="medicine"
-          fullWidth
-          label="Name of Medicine"
-          variant="outlined"
-          margin="normal"
-          required
-          value={medicine}
-          onChange={(e) => {
-            setMedicine(e.target.value);
-          }}
-        />
-        <TextField
-          name="frequency"
-          fullWidth
-          label="Frequency per Day"
-          variant="outlined"
-          margin="normal"
-          required
-          value={frequency}
-          onChange={(e) => {
-            setFrequency(e.target.value);
-          }}
-        />
-        <TextField
-          name="days"
-          fullWidth
-          label="No of Days"
-          variant="outlined"
-          margin="normal"
-          required
-          value={days}
-          onChange={(e) => {
-            setDays(e.target.value);
-          }}
-        />
-      </DialogBox>
-      {/* <SnackBar open={snackBarOpen} />; */}
-    </>
-  );
+          </Paper>
+        </Container>
+        <DialogBox
+          // onClose={handleOnDialogClose}
+          text="Please enter your passphrase"
+          title="Decrypt Data"
+          open={openDialogView}
+          buttons={buttonsView}
+        >
+          <TextField
+            name="hospitalPassPhrase"
+            fullWidth
+            label="Passphrase"
+            variant="outlined"
+            margin="normal"
+            required
+            value={hospitalPassPhrase}
+            onChange={(e) => {
+              setHospitalPassPhrase(e.target.value);
+            }}
+          />
+        </DialogBox>
+        <DialogBox
+          // onClose={handleOnDialogClose}
+          text="Enter Test details"
+          title="Test"
+          open={openDialogTest}
+          buttons={buttonsTest}
+        >
+          <TextField
+            name="test"
+            fullWidth
+            label="Test"
+            variant="outlined"
+            margin="normal"
+            required
+            value={test}
+            onChange={(e) => {
+              setTest(e.target.value);
+            }}
+          />
+        </DialogBox>
+        <DialogBox
+          // onClose={handleOnDialogClose}
+          title="Medication details"
+          open={openDialogMed}
+          buttons={buttonsMed}
+        >
+          <TextField
+            name="medicine"
+            fullWidth
+            label="Name of Medicine"
+            variant="outlined"
+            margin="normal"
+            required
+            value={medicine}
+            onChange={(e) => {
+              setMedicine(e.target.value);
+            }}
+          />
+          <TextField
+            name="frequency"
+            fullWidth
+            label="Frequency per Day"
+            variant="outlined"
+            margin="normal"
+            required
+            value={frequency}
+            onChange={(e) => {
+              setFrequency(e.target.value);
+            }}
+          />
+          <TextField
+            name="days"
+            fullWidth
+            label="No of Days"
+            variant="outlined"
+            margin="normal"
+            required
+            value={days}
+            onChange={(e) => {
+              setDays(e.target.value);
+            }}
+          />
+        </DialogBox>
+        {/* <SnackBar open={snackBarOpen} />; */}
+      </>
+    );
+  } else return null;
 }
 
 export default connect(mapStateToProps)(Add);

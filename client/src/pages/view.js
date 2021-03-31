@@ -47,8 +47,9 @@ function View(props) {
 
     //console.log(props.auth.user);
 
-    if(props.auth.user.role === roles.PATIENT) {
+    if (props.auth.user.role === roles.PATIENT) {
       const address = props.auth.user.scAccountAddress;
+      // console.log(props.auth.user);
       viewLocationHash(accountsAvailable[0], address).then(
         (response) => handleResponse(response)
       )
@@ -63,6 +64,9 @@ function View(props) {
   };
 
   const handleResponse = (response) => {
+    if (!response) {
+      return;
+    }
     console.log("response", response);
     console.log()
     const hospitalPrivateKey = cryptico.generateRSAKey(
@@ -110,95 +114,95 @@ function View(props) {
             View Files
           </Button>
         ) : (
-          <Paper style={{marginTop: "68px", padding: "16px"}}>
+          <Paper style={{ marginTop: "68px", padding: "16px" }}>
             <Grid container spacing={3}>
               <Grid item xs={6}>
-                  <TextField
-                    name="patient"
-                    fullWidth
-                    label="Patient"
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={props.auth.user.role === roles.PATIENT ? props.auth.user.username : patientDetails.firstname + " " + patientDetails.lastname}
-                  />
+                <TextField
+                  name="patient"
+                  fullWidth
+                  label="Patient"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={props.auth.user.role === roles.PATIENT ? props.auth.user.username : patientDetails.firstname + " " + patientDetails.lastname}
+                />
               </Grid>
               <Grid item xs={6}>
-                  <TextField
-                    name="date"
-                    fullWidth
-                    label="Date/Time"
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={record.date}
-                  />
+                <TextField
+                  name="date"
+                  fullWidth
+                  label="Date/Time"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.date}
+                />
               </Grid>
               <Grid item xs={6}>
-                  <TextField
-                    name="age"
-                    fullWidth
-                    label="Age"
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={record.age}
-                  />
+                <TextField
+                  name="age"
+                  fullWidth
+                  label="Age"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.age}
+                />
               </Grid>
               <Grid item xs={6}>
-                  <TextField
-                    name="sex"
-                    fullWidth
-                    label="Sex"
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={record.sex}
-                  />
+                <TextField
+                  name="sex"
+                  fullWidth
+                  label="Sex"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.sex}
+                />
               </Grid>
               <Grid item xs={6}>
-                  <TextField
-                    name="weight"
-                    fullWidth
-                    label="Weight"
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={record.weight}
-                  />
+                <TextField
+                  name="weight"
+                  fullWidth
+                  label="Weight"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.weight}
+                />
               </Grid>
               <Grid item xs={6}>
-                  <TextField
-                    name="temperature"
-                    fullWidth
-                    label="Temperature"
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={record.temp}
-                  />
+                <TextField
+                  name="temperature"
+                  fullWidth
+                  label="Temperature"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.temp}
+                />
               </Grid>
               <Grid item xs={6}>
-                  <TextField
-                    name="heartrate"
-                    fullWidth
-                    label="Heart Rate"
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={record.heart}
-                  />
+                <TextField
+                  name="heartrate"
+                  fullWidth
+                  label="Heart Rate"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.heart}
+                />
               </Grid>
               <Grid item xs={6}>
-                  <TextField
-                    name="bp"
-                    fullWidth
-                    label="BP"
-                    variant="outlined"
-                    margin="normal"
-                    disabled
-                    value={record.bp}
-                  />
+                <TextField
+                  name="bp"
+                  fullWidth
+                  label="BP"
+                  variant="outlined"
+                  margin="normal"
+                  disabled
+                  value={record.bp}
+                />
               </Grid>
               <Grid item xs={12}>
                 <TextField
@@ -255,7 +259,7 @@ function View(props) {
               {
                 record.photos.map((option, index) => (
                   <Grid item xs={12} key={index}>
-                    <embed src={option} height={option[5]==="i" ? "100%" : "700"} width="100%" />
+                    <embed src={option} height={option[5] === "i" ? "100%" : "700"} width="100%" />
                   </Grid>
                 ))
               }

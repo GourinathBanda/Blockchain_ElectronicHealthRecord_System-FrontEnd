@@ -78,7 +78,7 @@ function Appbar(props) {
     handleMenuClose();
   };
 
-  const handleViewAll = () => {};
+  const handleViewAll = () => { };
 
   // Dialog
   const handleOnDialogClose = () => {
@@ -122,17 +122,6 @@ function Appbar(props) {
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
-            <IconButton
-              aria-label="show 17 new notifications"
-              color="inherit"
-              onClick={handleMenuNotifications}
-              aria-controls="menu-notifications"
-              aria-haspopup="true"
-            >
-              <Badge badgeContent={17} color="secondary">
-                <NotificationsIcon />
-              </Badge>
-            </IconButton>
 
             <Menu
               id="menu-notifications"

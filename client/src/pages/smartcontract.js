@@ -6,7 +6,7 @@ import TextField from "@material-ui/core/TextField";
 import Typography from "@material-ui/core/Typography";
 import { connect } from "react-redux";
 import { deploy } from "../services/contractCalls";
-import { updateCurrentUser } from "../services/apiCalls";
+import { updateCurrentUser, getCurrentUser } from "../services/apiCalls";
 import { autoLogin } from "../redux/actionCreators/auth";
 import { roles } from "../helpers/roles";
 
@@ -30,10 +30,30 @@ const SmartContract = (props) => {
   const [aadhar, setAadhar] = useState("");
 
   useEffect(() => {
-    console.log(props.auth.user);
-    if (props.auth.user && props.auth.user.scAccountAddress) {
-      setSCDeployed(true);
+    // console.log(props.auth.user);
+    let user;
+    const getUserDetails = async () => {
+      user = await getCurrentUser();
+      // console.log(user);
+      if (user && user.encryptionKey) {
+        // console.log('here', user.encryptionKey);
+        setRSAKeysGenerated(true);
+      }
+      if (user && user.aadhar) {
+        setAadharDone(true);
+      }
+      if (user && user.scAccountAddress) {
+        setSCDeployed(true);
+      }
     }
+    // console.log(props.auth.user);
+    // if (props.auth.user && props.auth.user.scAccountAddress) {
+    //   setSCDeployed(true);
+    // }
+    getUserDetails();
+    // const user = getUserDetails();
+
+
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
       window.ethereum.enable();
@@ -114,8 +134,7 @@ const SmartContract = (props) => {
         {RSAKeysGenerated && (
           <>
             <Typography>
-              Please note down the pass phrase. Your public key has been
-              generated
+              Your public key has already been generated.
             </Typography>
           </>
         )}

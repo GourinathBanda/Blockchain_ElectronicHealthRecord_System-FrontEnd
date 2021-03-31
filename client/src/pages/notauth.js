@@ -16,14 +16,14 @@ const NotAuth = () => {
             You do not have the permission to perform this action or view
             content.
           </Typography>
-          <Button
+          {/* <Button
             variant="contained"
             fullWidth
             color="primary"
             // onClick={(e) => setPatientID(textInput)}
           >
             Go back
-          </Button>
+          </Button> */}
         </Paper>
       </Container>
     </div>
