@@ -84,7 +84,7 @@ export class Register extends Component {
       this.setState({ errors: "Not a valid email" });
       valid = false;
     }
-    if (this.state.user.role === roles.PATIENT && !this.state.user.aadhar.toString().length !== 12) {
+    if (this.state.user.role === roles.PATIENT && this.state.user.aadhar.toString().length !== 12) {
       this.setState({ errors: "Invalid AADHAR" });
       valid = false;
     }
