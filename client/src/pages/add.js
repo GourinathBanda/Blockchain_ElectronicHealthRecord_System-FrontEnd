@@ -208,7 +208,8 @@ function Add(props) {
     const newFile = {
       "date": new Date().toLocaleDateString(),
       "hospital": props.auth.user.username,
-      "hash": hash
+      "hash": hash,
+      "insurer": "",
     };
 
     masterFile.push(newFile);
@@ -448,13 +449,14 @@ function Add(props) {
               </Grid>
               {
                 photos.map((option, index) => (
-                  <Grid item xs={12} key={index}>
-                    <embed src={option} height="100%" width="100%" />
-                    <br></br>
+                  <>
+                    <Grid item xs={12} key={index}>
+                      <embed src={option} height="100%" width="100%" />
+                    </Grid>
                     <Button variant="contained" color="primary" component="span" onClick={() => { setPhotos(photos.filter((item, index2) => index !== index2)) }}>
                       Remove
                     </Button>
-                  </Grid>
+                  </>
                 ))
               }
               <Grid item xs={12}>

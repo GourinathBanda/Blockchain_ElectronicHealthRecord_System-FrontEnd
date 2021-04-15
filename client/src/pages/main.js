@@ -60,6 +60,7 @@ const Main = (props) => {
   const [patientPassPhrase, setPatientPassPhrase] = useState("");
   const [hospitalDetails, setHospitalDetails] = useState(null);
   const [searching, setSearching] = useState(false);
+  const [errors, setErrors] = useState("");
 
   const buttonsView = [
     {
@@ -274,6 +275,10 @@ const Main = (props) => {
     console.log("patientPassPhrase", patientPassPhrase);
     const locationHash = await viewLocationHash(accountsAvailable[0], address);
     if (!locationHash) {
+      setErrors("You don't have Medical Records")
+      setTimeout(() => {
+        setErrors("");
+      }, 5000)
       return;
     }
 
@@ -321,6 +326,7 @@ const Main = (props) => {
     <>
       <Appbar />
       <Container maxWidth="xs" style={{ marginTop: "200px" }}>
+        {errors}
         {searching === false && (
           <div className="findPatient">
             <Typography
@@ -385,7 +391,7 @@ const Main = (props) => {
               <Typography>
                 {patientDetails.firstname + " " + patientDetails.lastname}
               </Typography>
-              {props.auth.user && props.auth.user.role === roles.HOSPITAL && (
+              {props.auth.user && (props.auth.user.role === roles.HOSPITAL || props.auth.user.role === roles.INSURER) && (
                 <Button
                   variant="contained"
                   fullWidth
@@ -397,7 +403,7 @@ const Main = (props) => {
                   View
                 </Button>
               )}
-              {props.auth.user && props.auth.user.role === roles.HOSPITAL && (
+              {props.auth.user && (props.auth.user.role === roles.HOSPITAL || props.auth.user.role === roles.INSURER) && (
                 <Button
                   variant="contained"
                   fullWidth
@@ -405,7 +411,7 @@ const Main = (props) => {
                   // href="/add"
                   onClick={handleAdd}
                 >
-                  Add
+                  {props.auth.user.role === roles.HOSPITAL ? "Add" : "Settle Claim"}
                 </Button>
               )}
               <hr />

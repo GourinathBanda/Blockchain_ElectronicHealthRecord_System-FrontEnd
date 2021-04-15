@@ -1,12 +1,13 @@
 import React from "react";
 import Paper from "@material-ui/core/Paper";
 import Container from "@material-ui/core/Container";
-import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import Appbar from '../components/Appbar'
 
 const NotAuth = () => {
   return (
     <div>
+      <Appbar />
       <Container maxWidth="xs" style={{ marginTop: "200px" }}>
         <Paper style={{ padding: "20px" }}>
           <Typography margin="normal" style={{ marginTop: "8px" }}>
