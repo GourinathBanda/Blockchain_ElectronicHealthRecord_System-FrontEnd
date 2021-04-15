@@ -8,6 +8,7 @@ import Register from "./pages/register.js";
 import NotAuth from "./pages/notauth.js";
 import Login from "./pages/login.js";
 import Logout from "./pages/logout.js";
+import Claim from "./pages/claim.js";
 import Records from "./pages/records.js";
 import SmartContract from "./pages/smartcontract.js";
 // import AuthWrapper from "./components/AuthWrapper";
@@ -35,7 +36,6 @@ ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
       <ThemeProvider theme={theme}>
-        {/* <AuthWrapper> */}
         <Router>
           <PrivateRoute
             exact
@@ -79,11 +79,16 @@ ReactDOM.render(
             component={Records}
             roles={[roles.PATIENT, roles.HOSPITAL, roles.INSURER]}
           />
+          <PrivateRoute
+            exact
+            path="/claim"
+            component={Claim}
+            roles={[roles.INSURER]}
+          />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/notauth" component={NotAuth} />
         </Router>
-        {/* </AuthWrapper> */}
       </ThemeProvider>
     </Provider>
   </React.StrictMode>,

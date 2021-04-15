@@ -314,11 +314,21 @@ const Main = (props) => {
   };
 
   const navigateToAdd = () => {
-    history.push({
-      pathname: "/add",
-      patientID: patientID,
-      data: patientDetails,
-    });
+    if (props.auth.user.role === roles.INSURER) {
+      history.push({
+        pathname: "/claim",
+        patientID: patientID,
+        data: patientDetails,
+      });
+      return;
+    }
+    if (props.auth.user.role === roles.HOSPITAL) {
+      history.push({
+        pathname: "/add",
+        patientID: patientID,
+        data: patientDetails,
+      });
+    }
   };
 
   // console.log("sdf", patientDetails);

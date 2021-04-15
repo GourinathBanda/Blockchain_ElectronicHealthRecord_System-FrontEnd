@@ -25,7 +25,7 @@ const useStyles = makeStyles({
 
 const MedicalRecordCard = (props) => {
   const classes = useStyles();
-  const { date, name, viewpermission, onClickDownload, onClickView } = props;
+  const { date, name, insurer, viewpermission, onClickDownload, onClickView } = props;
   return (
     <Card className={classes.root} style={{ marginTop: "8px" }}>
       <CardContent>
@@ -34,10 +34,13 @@ const MedicalRecordCard = (props) => {
           color="textSecondary"
           gutterBottom
         >
-          {date || "11/12/2000"}
+          {date || "dd/mm/yyyy"}
         </Typography>
         <Typography variant="h5" component="h2">
           {name || "File Encrypted"}
+        </Typography>
+        <Typography className={classes.pos} color="textSecondary">
+          {insurer && ("Insurance Claim Settled by " + insurer)}
         </Typography>
         <Typography className={classes.pos} color="textSecondary">
           {viewpermission || "File Encrypted"}
@@ -45,9 +48,6 @@ const MedicalRecordCard = (props) => {
       </CardContent>
       <CardActions>
         <Button size="small" onClick={onClickDownload}>
-          Download & Decrypt
-        </Button>
-        <Button size="small" onClick={onClickView}>
           View
         </Button>
       </CardActions>

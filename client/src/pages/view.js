@@ -271,6 +271,7 @@ function View(props) {
             <MedicalRecordCard
               name={file.hospital}
               date={file.date}
+              insurer={file.insurer}
               key={index}
               onClickDownload={() => getMedicalRecord(file.hash)}
             />
