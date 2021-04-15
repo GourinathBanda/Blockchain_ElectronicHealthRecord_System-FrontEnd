@@ -22,8 +22,14 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  title: {
-    flexGrow: 1,
+  roleUsername: {
+    width: '33%',
+  },
+  dmr: {
+    position: 'fixed',
+    marginLeft: '33%',
+    width: '33%',
+    textAlign: 'center',
   },
   grow: {
     flexGrow: 1,
@@ -113,12 +119,14 @@ function Appbar(props) {
     <div className={classes.root}>
       <AppBar position="fixed">
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
-            {props.auth.user.role + " / " + props.auth.user.username}
-          </Typography>
-          <div className={classes.grow} />
-          <Typography variant="h6" className={classes.title}>
-            DMR
+          {props.auth.user && (
+            <Typography variant="h6" className={classes.roleUsername}>
+              {props.auth.user.role + " / " + props.auth.user.username}
+            </Typography>
+          )}
+
+          <Typography variant="h6" className={classes.dmr}>
+            DECENTRALIZED MEDICAL RECORDS
           </Typography>
           <div className={classes.grow} />
           <div className={classes.sectionDesktop}>
@@ -149,17 +157,19 @@ function Appbar(props) {
               </MenuItem>
             </Menu>
 
-            <IconButton
-              aria-label="show 15 new notifications"
-              color="inherit"
-              onClick={handleMenuAvatar}
-              aria-controls="menu-avatar"
-              aria-haspopup="true"
-            >
-              <Badge color="secondary">
-                <AccountCircleIcon />
-              </Badge>
-            </IconButton>
+            {props.auth.user && (
+              <IconButton
+                aria-label="appbarbutton"
+                color="inherit"
+                onClick={handleMenuAvatar}
+                aria-controls="menu-avatar"
+                aria-haspopup="true"
+              >
+                <Badge color="secondary">
+                  <AccountCircleIcon />
+                </Badge>
+              </IconButton>
+            )}
 
             <Menu
               id="menu-avatar"

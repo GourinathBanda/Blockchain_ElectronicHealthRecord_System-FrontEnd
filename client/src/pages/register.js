@@ -15,6 +15,7 @@ import IconButton from "@material-ui/core/IconButton";
 import CloseIcon from "@material-ui/icons/Close";
 import { roles } from "../helpers/roles";
 import faker from "faker";
+import Appbar from '../components/Appbar'
 
 const availableRoles = [roles.PATIENT, roles.HOSPITAL, roles.INSURER];
 
@@ -42,9 +43,7 @@ export class Register extends Component {
         aadhar: "",
         phoneNo: "",
       },
-      userError: "",
-      passError: "",
-      emailError: "",
+      errors: "",
       snackBarOpen: false,
     };
     this.handleChange = this.handleChange.bind(this);
@@ -72,16 +71,24 @@ export class Register extends Component {
 
   validateForm() {
     var valid = true;
-    if (this.state.user.username.includes("!")) {
-      this.setState({ userError: "Username cant include - !" });
+    if (!this.state.user.username.length > 5 || !this.state.user.username.length < 21) {
+      this.setState({ errors: "Username must be between 6 to 20 characters" });
       valid = false;
     }
-    if (this.state.user.password.includes("@")) {
-      this.setState({ passError: "Not a valid password." });
+    if (!this.state.user.password.length > 7 || !this.state.user.password.length < 21) {
+      this.setState({ errors: "Password length must be between 8 to 20 characters" });
       valid = false;
     }
     if (!this.state.user.email.includes("@")) {
-      this.setState({ emailError: "Not a valid email." });
+      this.setState({ errors: "Not a valid email" });
+      valid = false;
+    }
+    if (this.state.user.role === roles.PATIENT && !this.state.user.aadhar.length !== 12) {
+      this.setState({ errors: "Invalid AADHAR" });
+      valid = false;
+    }
+    if (this.state.user.phoneNo.length !== 10) {
+      this.setState({ errors: "Invalid Phone Number" });
       valid = false;
     }
     return valid;
@@ -136,7 +143,8 @@ export class Register extends Component {
 
     return (
       <>
-        <Container maxWidth="xs" style={{ marginTop: "20px" }}>
+        <Appbar />
+        <Container maxWidth="xs" style={{ marginTop: "80px" }}>
           <Paper style={{ padding: "20px" }}>
             <Typography margin="normal" style={{ marginTop: "8px" }}>
               Register
@@ -145,65 +153,64 @@ export class Register extends Component {
               <Typography>Registration successfull! Please login</Typography>
             ) : null}
 
-            {errMess}
-
+            {errMess || "\n" + this.state.errors}
             <Grid container spacing={2}>
               <Grid item xs={6}>
-              
-            <TextField
-              name="username"
-              fullWidth
-              label="Username"
-              variant="outlined"
-              margin="normal"
-              required
-              value={this.state.user.username}
-              onChange={(e) => {
-                this.handleChange(e);
-              }}
-            />
-            <TextField
-              name="firstname"
-              fullWidth
-              label="First Name"
-              variant="outlined"
-              margin="normal"
-              required
-              value={this.state.user.firstname}
-              onChange={(e) => {
-                this.handleChange(e);
-              }}
-            />
-            <TextField
-              name="lastname"
-              fullWidth
-              label="Last Name"
-              variant="outlined"
-              margin="normal"
-              required
-              value={this.state.user.lastname}
-              onChange={(e) => {
-                this.handleChange(e);
-              }}
-            />
-            <TextField
-              name="email"
-              fullWidth
-              label="Email"
-              variant="outlined"
-              margin="normal"
-              required
-              type="email"
-              value={this.state.user.email}
-              onChange={(e) => {
-                this.handleChange(e);
-              }}
-            />
+
+                <TextField
+                  name="username"
+                  fullWidth
+                  label="Username"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={this.state.user.username}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                />
+                <TextField
+                  name="firstname"
+                  fullWidth
+                  label="First Name"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={this.state.user.firstname}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                />
+                <TextField
+                  name="lastname"
+                  fullWidth
+                  label="Last Name"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  value={this.state.user.lastname}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                />
+                <TextField
+                  name="email"
+                  fullWidth
+                  label="Email"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  type="email"
+                  value={this.state.user.email}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                />
 
               </Grid>
               <Grid item xs={6}>
 
-              <TextField
+                <TextField
                   name="phoneNo"
                   fullWidth
                   label="Phone No."
@@ -215,10 +222,10 @@ export class Register extends Component {
                     this.handleChange(e);
                   }}
                 />
-           <TextField
+                <TextField
                   name="aadhar"
                   fullWidth
-                  label="Aadhar"
+                  label={this.state.user.role === roles.HOSPITAL ? 'Medical Reg. Number' : (this.state.user.role === roles.PATIENT ? "Aadhar" : "Insurer ID")}
                   variant="outlined"
                   margin="normal"
                   type="number"
@@ -227,41 +234,41 @@ export class Register extends Component {
                     this.handleChange(e);
                   }}
                 />
-            <TextField
-              name="role"
-              fullWidth
-              label="Select"
-              variant="outlined"
-              margin="normal"
-              required
-              select
-              value={this.state.user.role}
-              onChange={(e) => {
-                this.handleChange(e);
-              }}
-            >
-              {availableRoles.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              name="password"
-              fullWidth
-              label="Password"
-              variant="outlined"
-              margin="normal"
-              required
-              type="password"
-              value={this.state.user.password}
-              onChange={(e) => {
-                this.handleChange(e);
-              }}
-            />
+                <TextField
+                  name="role"
+                  fullWidth
+                  label="Select"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  select
+                  value={this.state.user.role}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                >
+                  {availableRoles.map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  name="password"
+                  fullWidth
+                  label="Password"
+                  variant="outlined"
+                  margin="normal"
+                  required
+                  type="password"
+                  value={this.state.user.password}
+                  onChange={(e) => {
+                    this.handleChange(e);
+                  }}
+                />
               </Grid>
             </Grid>
-            
+
             <Button
               variant={registering ? "outlined" : "contained"}
               fullWidth
@@ -288,7 +295,7 @@ export class Register extends Component {
               color="primary"
               onClick={this.runfaker}
             >
-              FAKER
+              SAMPLE DATA
             </Button>
           </Paper>
         </Container>

@@ -7,6 +7,7 @@ import Typography from "@material-ui/core/Typography";
 import { Redirect } from "react-router-dom";
 import { connect } from "react-redux";
 import { login, autoLogin } from "../redux/actionCreators/auth";
+import Appbar from '../components/Appbar'
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
@@ -40,6 +41,7 @@ const Login = (props) => {
 
   return (
     <div>
+      <Appbar />
       <Container maxWidth="xs" style={{ marginTop: "200px" }}>
         <Paper style={{ padding: "20px" }}>
           <Typography margin="normal" style={{ marginTop: "8px" }}>
