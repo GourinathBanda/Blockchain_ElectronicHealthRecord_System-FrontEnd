@@ -71,11 +71,12 @@ export class Register extends Component {
 
   validateForm() {
     var valid = true;
-    if (!this.state.user.username.length > 5 || !this.state.user.username.length < 21) {
+    if (this.state.user.username.length < 6 || this.state.user.username.length > 20) {
       this.setState({ errors: "Username must be between 6 to 20 characters" });
       valid = false;
     }
-    if (!this.state.user.password.length > 7 || !this.state.user.password.length < 21) {
+    // console.log('password', this.state.user.password.length)
+    if (this.state.user.password.length < 8 || this.state.user.password.length > 20) {
       this.setState({ errors: "Password length must be between 8 to 20 characters" });
       valid = false;
     }
@@ -83,11 +84,11 @@ export class Register extends Component {
       this.setState({ errors: "Not a valid email" });
       valid = false;
     }
-    if (this.state.user.role === roles.PATIENT && !this.state.user.aadhar.length !== 12) {
+    if (this.state.user.role === roles.PATIENT && !this.state.user.aadhar.toString().length !== 12) {
       this.setState({ errors: "Invalid AADHAR" });
       valid = false;
     }
-    if (this.state.user.phoneNo.length !== 10) {
+    if (this.state.user.phoneNo.toString().length !== 10) {
       this.setState({ errors: "Invalid Phone Number" });
       valid = false;
     }
@@ -97,6 +98,7 @@ export class Register extends Component {
   handleSubmit(e) {
     e.preventDefault();
     if (this.validateForm()) {
+      this.setState({ errors: "" })
       this.props.register(this.state.user);
     }
   }

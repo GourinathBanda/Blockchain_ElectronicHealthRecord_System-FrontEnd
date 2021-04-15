@@ -120,7 +120,7 @@ function Appbar(props) {
       <AppBar position="fixed">
         <Toolbar>
           {props.auth.user && (
-            <Typography variant="h6" className={classes.roleUsername}>
+            <Typography variant="h6" className={classes.roleUsername} onClick={() => history.push("/")}>
               {props.auth.user.role + " / " + props.auth.user.username}
             </Typography>
           )}
@@ -212,7 +212,7 @@ function Appbar(props) {
         open={openDialog}
         buttons={buttons}
       />
-    </div>
+    </div >
   );
 }
 

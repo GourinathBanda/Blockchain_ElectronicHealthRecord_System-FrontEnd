@@ -35,9 +35,7 @@ export class Profile extends Component {
         phoneNo: "",
       },
       edit: false,
-      userError: "",
-      passError: "",
-      emailError: "",
+      errors: "",
       snackBarOpen: false,
     };
     this.handleChange = this.handleChange.bind(this);
@@ -58,16 +56,12 @@ export class Profile extends Component {
 
   validateForm() {
     var valid = true;
-    if (this.state.user.username.includes("!")) {
-      this.setState({ userError: "Username cant include - !" });
-      valid = false;
-    }
-    if (this.state.user.password.includes("@")) {
-      this.setState({ passError: "Not a valid password." });
-      valid = false;
-    }
     if (!this.state.user.email.includes("@")) {
-      this.setState({ emailError: "Not a valid email." });
+      this.setState({ errors: "Not a valid email" });
+      valid = false;
+    }
+    if (this.state.user.phoneNo.toString().length !== 10) {
+      this.setState({ errors: "Invalid Phone Number" });
       valid = false;
     }
     return valid;
@@ -77,7 +71,7 @@ export class Profile extends Component {
     e.preventDefault();
     if (!this.state.edit) {
       this.setState({ edit: true });
-    } else {
+    } else if (this.state.edit && this.validateForm()) {
       this.setState({ edit: false });
       updateCurrentUser(this.state.user);
     }
@@ -93,14 +87,15 @@ export class Profile extends Component {
   }
 
   render() {
-    if (!this.props.auth.loggedIn || !this.props.auth.user)
-      return <Redirect to="/" />;
+    // if (!this.props.auth.loggedIn || !this.props.auth.user)
+    //   return <Redirect to="/" />;
 
     return (
       <>
         <Appbar />
         <Container maxWidth="md" style={{ marginTop: "70px" }}>
           <Paper style={{ padding: "20px" }}>
+            {this.state.errors}
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <TextField
@@ -110,7 +105,7 @@ export class Profile extends Component {
                   variant="outlined"
                   margin="normal"
                   required
-                  disabled={!this.state.edit}
+                  disabled
                   value={this.state.user.username}
                   onChange={(e) => {
                     this.handleChange(e);
@@ -195,7 +190,7 @@ export class Profile extends Component {
                 <TextField
                   name="aadhar"
                   fullWidth
-                  label="Aadhar"
+                  label={this.state.user.role === roles.HOSPITAL ? 'Medical Reg. Number' : (this.state.user.role === roles.PATIENT ? "Aadhar" : "Insurer ID")}
                   variant="outlined"
                   margin="normal"
                   disabled
